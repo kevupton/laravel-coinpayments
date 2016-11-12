@@ -1,0 +1,25 @@
+{
+    "name": "owner/package-name",
+    "description": "Bootstrap template for a laravel composer package",
+    "keywords": ["laravel", "package"],
+    "type": "Extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Upton",
+            "email": "uptonkg@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Owner\\PackageName\\": "src/Owner/PackageName/"
+        },
+        "files": [
+            "src/Owner/PackageName/Helpers/helpers.php"
+        ]
+    },
+    "minimum-stability": "stable"
+}

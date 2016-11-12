@@ -1,0 +1,40 @@
+language: php
+
+sudo: true
+
+php:
+  - 5.5
+  - 5.6
+  - 7.0
+  - hhvm
+
+sudo: false
+
+matrix:
+  fast_finish: true
+
+  allow_failures:
+    - php: hhvm
+
+cache:
+  directories:
+    - laravel
+
+services: mysql
+
+install:
+  # create a new database for the hyn connection
+  - export DB_USERNAME=travis DB_DATABASE=hyn DB_PASSWORD= QUEUE_DRIVER=sync
+  - export PACKAGE_PROVIDER=Owner\\\\PackageName\\\\Providers\\\\ReferralsServiceProvider::class
+#  - export SEED_CLASS=TestSeeds::class
+  - export PACKAGE_NAME=kevupton/referrals
+  - curl -s https://raw.githubusercontent.com/kevupton/docker-laravel-tests/master/setup.sh | bash
+
+script:
+  - cd laravel
+  - composer update
+  - php artisan vendor:publish --force
+  - php artisan migrate --seed
+  - phpunit "vendor/$PACKAGE_NAME"
+
+  # run the script calling unit tests and so on
