@@ -1,6 +1,7 @@
 <?php namespace Kevupton\LaravelCoinpayments\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Kevupton\LaravelCoinpayments\Coinpayments;
 
 class PackageNameServiceProvider extends ServiceProvider {
 
@@ -13,6 +14,16 @@ class PackageNameServiceProvider extends ServiceProvider {
     {
         $this->publishes([__DIR__ . '/../../../config/coinpayments.php' => config_path('coinpayments.php')]);
 
+        app()->singleton('coinpayments', function ($app) {
+           return new Coinpayments(
+               cp_conf('private_key'),
+               cp_conf('public_key'),
+               cp_conf('merchant_id'),
+               cp_conf('ipn_secret'),
+               cp_conf('ipn_url'),
+               cp_conf('format')
+           );
+        });
         $this->loadMigrationsFrom(__DIR__ . '../../../database/migrations');
     }
 

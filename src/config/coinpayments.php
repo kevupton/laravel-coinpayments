@@ -11,7 +11,7 @@ return array(
     'public_key' => getenv('COINPAYMENTS_PUBLIC_KEY'),
 
     // Your API private key associated with your coinpayments account
-    'private_key' => getenv('COINPAYMENTS_API_PASSPHRASE'),
+    'private_key' => getenv('COINPAYMENTS_PRIVATE_KEY'),
 
     // This is used to verify that an IPN is from us, use a good random string nobody can guess.
     'ipn_secret' => getenv('COINPAYMENTS_IPN_SECRET'),
