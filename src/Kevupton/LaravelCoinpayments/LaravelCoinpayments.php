@@ -86,7 +86,17 @@ class LaravelCoinpayments extends Coinpayments {
      */
     public function validateIPN(array $request, array $server, $headers = [])
     {
+        $log_data = [
+            'request' => $request,
+            'headers' => $headers,
+            'server' => array_intersect_key($server, [
+                'PHP_AUTH_USER', 'PHP_AUTH_PW'
+            ])
+        ];
+
         try {
+            cp_log($log_data, 'IPN_RECEIVED', Log::LEVEL_ALL);
+
             $is_complete    = parent::validateIPN($request, $server);
             $ipn            = Ipn::create($request);
 
@@ -99,14 +109,9 @@ class LaravelCoinpayments extends Coinpayments {
             }
         }
         catch (CoinPaymentsException $e) {
-            cp_log([
-                'error_message' => $e->getMessage(),
-                'request_content' => $request,
-                'request_headers' => $headers,
-                'server' => array_intersect_key($server, [
-                    'PHP_AUTH_USER', 'PHP_AUTH_PW'
-                ])
-            ], 'IPN_ERROR', Log::LEVEL_ERROR);
+            $log_data['error_message'] = $e->getMessage();
+
+            cp_log($log_data, 'IPN_ERROR', Log::LEVEL_ERROR);
 
             throw $e;
         }
