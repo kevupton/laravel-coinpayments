@@ -2,7 +2,11 @@
 
 namespace Kevupton\LaravelCoinpayments;
 
+use Illuminate\Http\Request;
+use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsException;
 use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsResponseError;
+use Kevupton\LaravelCoinpayments\Exceptions\IpnIncompleteException;
+use Kevupton\LaravelCoinpayments\Models\Ipn;
 use Kevupton\LaravelCoinpayments\Models\Log;
 use Kevupton\LaravelCoinpayments\Models\Model;
 use Kevupton\LaravelCoinpayments\Models\Transaction;
@@ -48,9 +52,16 @@ class LaravelCoinpayments extends Coinpayments {
     {
         $receipt = parent::apiCall($cmd, $req);
 
-        $this->logCall($receipt);
+        $has_error = $receipt->hasError();
 
-        if ($receipt->hasError())
+        cp_log([
+            'request' => $receipt->getRequest(),
+            'response' => $receipt->getResponse()
+        ], $has_error ? 'API_CALL_ERROR' : 'API_CALL',
+            $has_error ? Log::LEVEL_ERROR : Log::LEVEL_ALL
+        );
+
+        if ($has_error)
             throw new CoinPaymentsResponseError($receipt->getError());
 
         switch ($receipt->getCommand()) {
@@ -67,21 +78,28 @@ class LaravelCoinpayments extends Coinpayments {
     }
 
     /**
-     * Logs the call depending on the log level of the application
-     * @param Receipt $receipt
+     * @param Request $request
+     * @return Ipn
+     * @throws IpnIncompleteException|CoinPaymentsException|\Exception
      */
-    private function logCall (Receipt $receipt) {
+    public function validateIPN(Request $request)
+    {
+        try {
+            parent::validateIPN($request->all(), $request->server());
+        }
+        catch (\Exception $e) {
+            cp_log([
+                'error_message' => $e->getMessage(),
+                'request_content' => $request->all(),
+                'request_headers' => $request->headers,
+                'server' => array_intersect_key($request->server(), [
+                    'PHP_AUTH_USER', 'PHP_AUTH_PW'
+                ])
+            ], 'IPN_ERROR', Log::LEVEL_ERROR);
 
-        $log_level = cp_log_level();
+            throw $e;
+        }
 
-        // check if this request should be logged
-        if (!($log_level === Log::LEVEL_ALL ||
-            $log_level === Log::LEVEL_ERROR && $receipt->hasError())) return;
-
-        cp_log(json_encode([
-            'request' => $receipt->getRequest(),
-            'response' => $receipt->getResponse()
-        ]), $receipt->hasError() ? 'ERROR' : null);
-
+        return Ipn::create($request->all());
     }
 }

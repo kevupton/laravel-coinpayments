@@ -43,14 +43,17 @@ if (!function_exists('cp_log')) {
     /**
      * Logs the request in the database
      *
-     * @param string $content the xml data received
+     * @param mixed $content the xml data received
      * @param null|string $type
-     * @return Log
+     * @param int $level
+     * @return Log|null
      * @internal param array $sent the data sent
      */
-    function cp_log($content, $type = null) {
+    function cp_log($content, $type = null, $level = Log::LEVEL_ALL) {
+        if (cp_log_level() < $level) return null;
+
         return Log::create([
-            'log' => $content,
+            'log' => json_encode($content),
             'type' => $type
         ]);
     }

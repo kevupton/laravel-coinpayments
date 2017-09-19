@@ -3,6 +3,7 @@
 namespace Kevupton\LaravelCoinpayments;
 
 use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsException;
+use Kevupton\LaravelCoinpayments\Exceptions\IpnIncompleteException;
 use Kevupton\LaravelCoinpayments\Exceptions\JsonParseException;
 use Kevupton\LaravelCoinpayments\Exceptions\MessageSendException;
 
@@ -187,34 +188,35 @@ class Coinpayments
     /**
      * Validate the IPN request and payment.
      *
-     * @param  array $postData
-     * @param  array $serverData
+     * @param  array $post_data
+     * @param  array $server_data
      * @return mixed
      * @throws CoinPaymentsException
+     * @throws IpnIncompleteException
      */
-    public function validateIPN(array $postData, array $serverData)
+    public function validateIPN(array $post_data, array $server_data)
     {
-        if (!isset($postData['ipn_mode'], $postData['merchant'], $postData['status'], $postData['status_text'])) {
+        if (!isset($post_data['ipn_mode'], $post_data['merchant'], $post_data['status'], $post_data['status_text'])) {
             throw new CoinPaymentsException("Insufficient POST data provided.");
         }
 
-        if ($postData['ipn_mode'] == 'httpauth') {
+        if ($post_data['ipn_mode'] == 'httpauth') {
 
-            if ($serverData['PHP_AUTH_USER'] !== $this->merchant_id) {
+            if ($server_data['PHP_AUTH_USER'] !== $this->merchant_id) {
                 throw new CoinPaymentsException("Invalid merchant ID provided.");
             }
-            if ($serverData['PHP_AUTH_PW'] !== $this->ipn_secret) {
+            if ($server_data['PHP_AUTH_PW'] !== $this->ipn_secret) {
                 throw new CoinPaymentsException("Invalid IPN secret provided.");
             }
 
-        } elseif ($postData['ipn_mode'] == 'hmac') {
+        } elseif ($post_data['ipn_mode'] == 'hmac') {
 
             $hmac = hash_hmac("sha512", file_get_contents('php://input'), $this->ipn_secret);
 
-            if ($hmac !== $serverData['HTTP_HMAC']) {
+            if ($hmac !== $server_data['HTTP_HMAC']) {
                 throw new CoinPaymentsException("Invalid HMAC provided.");
             }
-            if ($postData['merchant'] !== $this->merchant_id) {
+            if ($post_data['merchant'] !== $this->merchant_id) {
                 throw new CoinPaymentsException("Invalid merchant ID provided.");
             }
 
@@ -222,13 +224,11 @@ class Coinpayments
             throw new CoinPaymentsException("Invalid IPN mode provided.");
         }
 
-        $order_status = $postData['status'];
-        $order_status_text = $postData['status_text'];
+        $order_status = $post_data['status'];
 
-        if ($order_status < 0) throw new CoinPaymentsException("{$order_status}: {$order_status_text}");
-
-        // If $order_status is >100 or is 2, return true
-        return !($order_status >= 0 && $order_status < 100 && $order_status != 2);
+        // If $order_status is >100 or is 2, then it is complete
+        if (!($order_status >= 100 || $order_status == 2))
+            throw new IpnIncompleteException($post_data['status_text']);
     }
 
     /**

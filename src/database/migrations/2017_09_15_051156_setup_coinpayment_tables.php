@@ -66,6 +66,27 @@ class SetupCoinpaymentTables extends Migration
 
         Schema::create($prefix . 'ipns', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('ipn_version', 10);
+            $table->string('ipn_id')->unique();
+            $table->string('ipn_mode', 32);
+            $table->string('merchant');
+            $table->string('ipn_type', 32);
+            $table->string('txn_id')->indexed();
+            $table->tinyInteger('status')->indexed();
+            $table->string('status_text');
+            $table->string('currency1');
+            $table->string('currency2');
+            $table->string('amount1');
+            $table->string('amount2');
+            $table->string('fee');
+            $table->string('buyer_name')->nullable();
+            $table->string('item_name')->nullable();
+            $table->string('item_number')->nullable();
+            $table->string('invoice')->nullable();
+            $table->text('custom')->nullable();
+            $table->string('send_tx')->nullable();
+            $table->string('received_amount')->nullable();
+            $table->string('received_confirms')->nullable();
             $table->timestamps();
         });
 
@@ -73,10 +94,6 @@ class SetupCoinpaymentTables extends Migration
            $table->increments('id');
            $table->string('type', 32)->nullable();
            $table->text('log');
-           $table->string('command', 64);
-           $table->string('error')->nullable();
-           $table->text('request');
-           $table->text('response');
            $table->timestamps();
         });
     }
