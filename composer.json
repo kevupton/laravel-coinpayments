@@ -18,7 +18,8 @@
             "Kevupton\\LaravelCoinpayments\\": "src/Kevupton/LaravelCoinpayments/"
         },
         "files": [
-            "src/Kevupton/LaravelCoinpayments/Helpers/helpers.php"
+            "src/Kevupton/LaravelCoinpayments/Helpers/helpers.php",
+            "src/Kevupton/LaravelCoinpayments/Helpers/constants.php"
         ]
     },
     "minimum-stability": "stable",

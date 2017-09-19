@@ -1,5 +1,7 @@
 <?php
 
+use Kevupton\LaravelCoinpayments\Models\Log;
+
 return array(
 
     // prefix to each of the tables in the database
@@ -22,6 +24,6 @@ return array(
     // The format of response to return, json or xml. (default: json)
     'format' => getenv('COINPAYMENTS_API_FORMAT', 'json'),
 
-    // Whether or not to save a log of the requests
-    'log_requests' => true,
+    // ALL logs all requests, ERROR logs only errors, and NONE never
+    'log_level' => Log::LEVEL_ERROR,
 );

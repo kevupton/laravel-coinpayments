@@ -9,6 +9,7 @@
 namespace Kevupton\LaravelCoinpayments\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use Kevupton\LaravelCoinpayments\Providers\LaravelCoinpaymentsServiceProvider;
 
 class Coinpayments extends Facade
 {
@@ -17,5 +18,5 @@ class Coinpayments extends Facade
      *
      * @return string
      */
-    protected static function getFacadeAccessor() { return 'coinpayments'; }
+    protected static function getFacadeAccessor() { return LaravelCoinpaymentsServiceProvider::SINGLETON; }
 }

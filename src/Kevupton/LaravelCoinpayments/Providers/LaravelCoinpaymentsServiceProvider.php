@@ -2,8 +2,11 @@
 
 use Illuminate\Support\ServiceProvider;
 use Kevupton\LaravelCoinpayments\Coinpayments;
+use Kevupton\LaravelCoinpayments\LaravelCoinpayments;
 
-class PackageNameServiceProvider extends ServiceProvider {
+class LaravelCoinpaymentsServiceProvider extends ServiceProvider {
+
+    const SINGLETON = 'coinpayments';
 
     /**
      * Bootstrap the application services.
@@ -14,16 +17,10 @@ class PackageNameServiceProvider extends ServiceProvider {
     {
         $this->publishes([__DIR__ . '/../../../config/coinpayments.php' => config_path('coinpayments.php')]);
 
-        app()->singleton('coinpayments', function ($app) {
-           return new Coinpayments(
-               cp_conf('private_key'),
-               cp_conf('public_key'),
-               cp_conf('merchant_id'),
-               cp_conf('ipn_secret'),
-               cp_conf('ipn_url'),
-               cp_conf('format')
-           );
+        app()->singleton(self::SINGLETON, function ($app) {
+           return new LaravelCoinpayments($app);
         });
+
         $this->loadMigrationsFrom(__DIR__ . '../../../database/migrations');
     }
 

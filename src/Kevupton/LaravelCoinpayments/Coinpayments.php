@@ -25,7 +25,6 @@ class Coinpayments
         $this->ipn_secret = $ipn_secret;
         $this->ipn_url = $ipn_url;
         $this->format = $format;
-        $this->ch = null;
     }
 
     /**
@@ -76,6 +75,7 @@ class Coinpayments
                 $request[$field] = $additional[$field];
             }
         }
+
         return $this->apiCall('create_transaction', $request);
     }
 
@@ -102,6 +102,7 @@ class Coinpayments
             'txid' => $txID,
             'full' => (int)$all
         );
+
         return $this->apiCall('get_tx_info', $req);
     }
 
@@ -117,6 +118,7 @@ class Coinpayments
             'currency' => $currency,
             'ipn_url' => $ipnUrl,
         );
+
         return $this->apiCall('get_callback_address', $req);
     }
 
@@ -138,6 +140,7 @@ class Coinpayments
             'auto_confirm' => $autoConfirm ? 1 : 0,
             'ipn_url' => $ipnUrl,
         );
+
         return $this->apiCall('create_withdrawal', $req);
     }
 
@@ -157,6 +160,7 @@ class Coinpayments
             'merchant' => $merchant,
             'auto_confirm' => $autoConfirm ? 1 : 0,
         );
+
         return $this->apiCall('create_transfer', $req);
     }
 
@@ -176,6 +180,7 @@ class Coinpayments
             'pbntag' => $pbntag,
             'auto_confirm' => $autoConfirm ? 1 : 0,
         );
+
         return $this->apiCall('create_transfer', $req);
     }
 
@@ -250,8 +255,8 @@ class Coinpayments
         $req['version'] = 1;
         $req['cmd'] = $cmd;
         $req['key'] = $this->public_key;
-        $req['format'] = $this->format; //supported values are json and xml
-        $req['ipn_url'] = $this->ipn_url;
+        $req['format'] = $req['format'] ?: $this->format; //supported values are json and xml
+        $req['ipn_url'] = $req['ipn_url']?: $this->ipn_url;
 
         // Generate the query string
         $postData = http_build_query($req, '', '&');

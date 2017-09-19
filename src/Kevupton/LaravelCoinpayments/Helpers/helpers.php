@@ -2,8 +2,6 @@
 
 use Kevupton\LaravelCoinpayments\Models\Log;
 
-define('COINPAYMENTS_CONFIG', 'coinpayments');
-
 if (!function_exists('cp_prefix')) {
     /**
      * Gets the prefix of the database table.

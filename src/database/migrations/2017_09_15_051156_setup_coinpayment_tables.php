@@ -13,9 +13,7 @@ class SetupCoinpaymentTables extends Migration
      */
     public function up()
     {
-        $pre = cp_prefix();
-
-        Schema::create($pre . 'transactions', function (Blueprint $table) {
+        Schema::create(CP_TABLE_PREFIX . 'transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('amount');
             $table->string('currency1', 10);
@@ -36,12 +34,42 @@ class SetupCoinpaymentTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create($pre . 'transfers', function (Blueprint $table) {
-
+        Schema::create(CP_TABLE_PREFIX . 'transfers', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('amount');
+            $table->string('currency', 10);
+            $table->string('merchant')->nullable();
+            $table->string('pbntag')->nullable();
+            $table->boolean('auto_confirm')->default(0);
+            $table->string('ref_id')->unique();
+            $table->unsignedTinyInteger("status");
+            $table->timestamps();
         });
 
-        Schema::create($pre . 'log', function (Blueprint $table) {
+        Schema::create(CP_TABLE_PREFIX . 'withdrawals', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('amount');
+            $table->string('currency', 10);
+            $table->string('currency2', 10)->nullable();
+            $table->string('address')->nullable();
+            $table->string('pbntag')->nullable();
+            $table->string('dest_tag')->nullable();
+            $table->string('ipn_url')->nullable();
+            $table->boolean('auto_confirm')->default(0);
+            $table->text('note')->nullable();
+            $table->string('ref_id')->unique();
+            $table->unsignedTinyInteger("status");
+            $table->timestamps();
+        });
+
+        Schema::create(CP_TABLE_PREFIX . 'ipns', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->timestamps();
+        });
+
+        Schema::create(CP_TABLE_PREFIX . 'log', function (Blueprint $table) {
            $table->increments('id');
+           $table->timestamps();
         });
     }
 
@@ -52,9 +80,9 @@ class SetupCoinpaymentTables extends Migration
      */
     public function down()
     {
-        $pre = cp_prefix();
-
-        Schema::dropIfExists($pre . 'log');
-        Schema::dropIfExists($pre . 'transaction');
+        Schema::dropIfExists(CP_TABLE_PREFIX . 'log');
+        Schema::dropIfExists(CP_TABLE_PREFIX . 'ipns');
+        Schema::dropIfExists(CP_TABLE_PREFIX . 'transfers');
+        Schema::dropIfExists(CP_TABLE_PREFIX . 'transaction');
     }
 }
