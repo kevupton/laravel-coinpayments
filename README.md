@@ -1,6 +1,13 @@
-# Bootstrap Laravel Composer Package #
-Bare bones template for bootrstrapping a laravel composer package.
-Includes the Service Provider and a helpers file which is a global functions file.
+# Laravel Coinpayments #
+Implementation of most of the CoinPayments functionality. 
+
+### [Coinpayments Website](https://www.coinpayments.net/index.php?ref=a458c004de21a18c71849871781be820)
+
+#### Usage:
+
+```php
+
+```
 
 
 

@@ -1,7 +1,7 @@
 <?php namespace Kevupton\LaravelCoinpayments\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Kevupton\LaravelCoinpayments\Coinpayments;
+use Kevupton\LaravelCoinpayments\Facades\Coinpayments;
 use Kevupton\LaravelCoinpayments\LaravelCoinpayments;
 
 class LaravelCoinpaymentsServiceProvider extends ServiceProvider {
@@ -22,6 +22,8 @@ class LaravelCoinpaymentsServiceProvider extends ServiceProvider {
         });
 
         $this->loadMigrationsFrom(__DIR__ . '/../../../database/migrations');
+
+        class_alias(Coinpayments::class, 'Coinpayments');
     }
 
     /**
