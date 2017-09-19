@@ -78,14 +78,15 @@ class LaravelCoinpayments extends Coinpayments {
     }
 
     /**
-     * @param Request $request
+     * @param Request|array $request
+     * @param array|null $server
      * @return Ipn
-     * @throws IpnIncompleteException|CoinPaymentsException|\Exception
+     * @throws \Exception
      */
-    public function validateIPN(Request $request)
+    public function validateIPN(array $request, array $server)
     {
         try {
-            parent::validateIPN($request->all(), $request->server());
+            parent::validateIPN($request, $server);
         }
         catch (\Exception $e) {
             cp_log([
@@ -101,5 +102,13 @@ class LaravelCoinpayments extends Coinpayments {
         }
 
         return Ipn::create($request->all());
+    }
+
+    /**
+     * @param Request $request
+     * @return Ipn
+     */
+    public function validateIPNRequest (Request $request) {
+        return $this->validateIPN($request->all(), $request->server());
     }
 }
