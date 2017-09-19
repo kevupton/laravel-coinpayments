@@ -1,6 +1,8 @@
 /bootstrap/compiled.php
 .env.*.php
 .env.php
+*.dump
+vendor
 
 # =========================
 # Operating System Files

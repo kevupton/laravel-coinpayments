@@ -1,7 +1,7 @@
 {
-    "name": "owner/package-name",
-    "description": "Bootstrap template for a laravel composer package",
-    "keywords": ["laravel", "package"],
+    "name": "kevupton/laravel-coinpayments",
+    "description": "Coinpayments for Laravel",
+    "keywords": ["laravel", "lumen", "coinpayments"],
     "type": "Extension",
     "license": "MIT",
     "authors": [
@@ -15,11 +15,14 @@
     },
     "autoload": {
         "psr-4": {
-            "Owner\\PackageName\\": "src/Owner/PackageName/"
+            "Kevupton\\LaravelCoinpayments\\": "src/Kevupton/LaravelCoinpayments/"
         },
         "files": [
-            "src/Owner/PackageName/Helpers/helpers.php"
+            "src/Kevupton/LaravelCoinpayments/Helpers/helpers.php"
         ]
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "require-dev": {
+        "laravel/laravel": "^5.5"
+    }
 }
