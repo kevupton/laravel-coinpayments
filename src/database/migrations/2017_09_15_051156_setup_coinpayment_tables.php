@@ -109,7 +109,8 @@ class SetupCoinpaymentTables extends Migration
 
         Schema::dropIfExists($prefix . 'log');
         Schema::dropIfExists($prefix . 'ipns');
+        Schema::dropIfExists($prefix . 'withdrawals');
         Schema::dropIfExists($prefix . 'transfers');
-        Schema::dropIfExists($prefix . 'transaction');
+        Schema::dropIfExists($prefix . 'transactions');
     }
 }
