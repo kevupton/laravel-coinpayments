@@ -227,8 +227,7 @@ class Coinpayments
         $order_status = $post_data['status'];
 
         // If $order_status is >100 or is 2, then it is complete
-        if (!($order_status >= 100 || $order_status == 2))
-            throw new IpnIncompleteException($post_data['status_text']);
+        return ($order_status >= 100 || $order_status == 2);
     }
 
     /**

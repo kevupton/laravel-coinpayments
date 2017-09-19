@@ -3,7 +3,9 @@
 namespace Kevupton\LaravelCoinpayments;
 
 use Illuminate\Http\Request;
+use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsException;
 use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsResponseError;
+use Kevupton\LaravelCoinpayments\Exceptions\IpnIncompleteException;
 use Kevupton\LaravelCoinpayments\Models\Ipn;
 use Kevupton\LaravelCoinpayments\Models\Log;
 use Kevupton\LaravelCoinpayments\Models\Model;
@@ -80,14 +82,21 @@ class LaravelCoinpayments extends Coinpayments {
      * @param array|null $server
      * @param array $headers
      * @return Ipn
-     * @throws \Exception
+     * @throws IpnIncompleteException|CoinPaymentsException
      */
     public function validateIPN(array $request, array $server, $headers = [])
     {
         try {
-            parent::validateIPN($request, $server);
+            $is_complete    = parent::validateIPN($request, $server);
+            $ipn            = Ipn::create($request);
+
+            if ($is_complete) {
+                return $ipn;
+            } else {
+                throw new IpnIncompleteException($request['status_text']);
+            }
         }
-        catch (\Exception $e) {
+        catch (CoinPaymentsException $e) {
             cp_log([
                 'error_message' => $e->getMessage(),
                 'request_content' => $request,
@@ -99,8 +108,6 @@ class LaravelCoinpayments extends Coinpayments {
 
             throw $e;
         }
-
-        return Ipn::create($request);
     }
 
     /**
