@@ -35,7 +35,7 @@ class Coinpayments
      */
     public function getRates($short = true, $accepted = true)
     {
-        return $this->apiCall('rates', ['short' => (int)$short, 'accepted' => (int)$accepted]);
+        return $this->apiCall(CoinpaymentsCommands::RATES, ['short' => (int)$short, 'accepted' => (int)$accepted]);
     }
 
     /**
@@ -45,7 +45,7 @@ class Coinpayments
      */
     public function getBalances($all = false)
     {
-        return $this->apiCall('balances', array('all' => $all ? 1 : 0));
+        return $this->apiCall(CoinpaymentsCommands::BALANCES, array('all' => $all ? 1 : 0));
     }
 
     /**
@@ -76,7 +76,7 @@ class Coinpayments
             }
         }
 
-        return $this->apiCall('create_transaction', $request);
+        return $this->apiCall(CoinpaymentsCommands::CREATE_TRANSACTION, $request);
     }
 
     /**
@@ -86,7 +86,7 @@ class Coinpayments
     public function createTransaction($req)
     {
         // See https://www.coinpayments.net/apidoc-create-transaction for parameters
-        return $this->apiCall('create_transaction', $req);
+        return $this->apiCall(CoinpaymentsCommands::CREATE_TRANSACTION, $req);
     }
 
     /**
@@ -103,7 +103,7 @@ class Coinpayments
             'full' => (int)$all
         );
 
-        return $this->apiCall('get_tx_info', $req);
+        return $this->apiCall(CoinpaymentsCommands::GET_TX_INFO, $req);
     }
 
     /**
@@ -119,7 +119,7 @@ class Coinpayments
             'ipn_url' => $ipnUrl,
         );
 
-        return $this->apiCall('get_callback_address', $req);
+        return $this->apiCall(CoinpaymentsCommands::GET_CALLBACK_ADDRESS, $req);
     }
 
     /**
@@ -141,7 +141,7 @@ class Coinpayments
             'ipn_url' => $ipnUrl,
         );
 
-        return $this->apiCall('create_withdrawal', $req);
+        return $this->apiCall(CoinpaymentsCommands::CREATE_WITHDRAWAL, $req);
     }
 
     /**
@@ -161,7 +161,7 @@ class Coinpayments
             'auto_confirm' => $autoConfirm ? 1 : 0,
         );
 
-        return $this->apiCall('create_transfer', $req);
+        return $this->apiCall(CoinpaymentsCommands::CREATE_TRANSFER, $req);
     }
 
     /**
@@ -181,7 +181,7 @@ class Coinpayments
             'auto_confirm' => $autoConfirm ? 1 : 0,
         );
 
-        return $this->apiCall('create_transfer', $req);
+        return $this->apiCall(CoinpaymentsCommands::CREATE_TRANSFER, $req);
     }
 
     /**
@@ -192,7 +192,7 @@ class Coinpayments
      * @return mixed
      * @throws CoinPaymentsException
      */
-    public function validate(array $postData, array $serverData)
+    public function validateIPN(array $postData, array $serverData)
     {
         if (!isset($postData['ipn_mode'], $postData['merchant'], $postData['status'], $postData['status_text'])) {
             throw new CoinPaymentsException("Insufficient POST data provided.");
@@ -242,12 +242,12 @@ class Coinpayments
     /**
      * @param string $cmd the command to be executed
      * @param array $req
-     * @return mixed
+     * @return Receipt
      * @throws CoinPaymentsException
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    private function apiCall($cmd, $req = array())
+    protected function apiCall($cmd, $req = array())
     {
         if (!$this->isSetup()) throw new CoinPaymentsException('You have not called the Setup function with your private and public keys!');
 
@@ -284,11 +284,10 @@ class Coinpayments
             $response = json_decode($data, true);
         }
 
-        if ($response !== null && count($response)) {
-            return $response;
-        } else {
-            // If you are using PHP 5.5.0 or higher you can use json_last_error_msg() for a better error message
+        // If you are using PHP 5.5.0 or higher you can use json_last_error_msg() for a better error message
+        if ($response === null || !count($response))
             throw new JsonParseException('Unable to parse JSON result (' . json_last_error() . ')');
-        }
+
+        return new Receipt($cmd, $req, $response);
     }
 }

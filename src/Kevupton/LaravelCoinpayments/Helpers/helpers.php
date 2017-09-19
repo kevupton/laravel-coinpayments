@@ -34,13 +34,14 @@ if (!function_exists('cp_log')) {
      * Logs the request in the database
      *
      * @param string $content the xml data received
-     * @param array $sent the data sent
+     * @param null|string $type
      * @return Log
+     * @internal param array $sent the data sent
      */
-    function cp_log($content, array $sent = null) {
+    function cp_log($content, $type = null) {
         return Log::create([
-            'sent' => json_encode(array_except($sent, \Kevupton\MerchantWarrior\Models\Log::DO_NOT_LOG)),
-            'content' => $content
+            'log' => $content,
+            'type' => $type
         ]);
     }
 }

@@ -69,6 +69,12 @@ class SetupCoinpaymentTables extends Migration
 
         Schema::create(CP_TABLE_PREFIX . 'log', function (Blueprint $table) {
            $table->increments('id');
+           $table->string('type', 32)->nullable();
+           $table->text('log');
+           $table->string('command', 64);
+           $table->string('error')->nullable();
+           $table->text('request');
+           $table->text('response');
            $table->timestamps();
         });
     }
