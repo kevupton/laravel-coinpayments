@@ -51,20 +51,20 @@ class Receipt
      * @return bool
      */
     public function hasError () {
-        return $this->response->error != 'ok';
+        return $this->response['error'] != 'ok';
     }
 
     /**
      * @return string
      */
     public function getError () {
-        return $this->hasError() ? $this->response->error : null;
+        return $this->hasError() ? $this->response['error'] : null;
     }
 
     /**
      * @return array
      */
     public function toResultArray () {
-        return array_merge($this->request, $this->response->result);
+        return array_merge($this->request, $this->response['result']);
     }
 }
