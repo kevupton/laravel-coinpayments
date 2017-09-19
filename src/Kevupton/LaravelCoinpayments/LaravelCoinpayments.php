@@ -90,6 +90,8 @@ class LaravelCoinpayments extends Coinpayments {
             $is_complete    = parent::validateIPN($request, $server);
             $ipn            = Ipn::create($request);
 
+            // only return the ipn if it was successful, otherwise throw an exception
+            // we do it like this so we can record the ipn either way.
             if ($is_complete) {
                 return $ipn;
             } else {
