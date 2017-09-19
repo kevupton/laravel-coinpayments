@@ -21,7 +21,7 @@ class LaravelCoinpaymentsServiceProvider extends ServiceProvider {
            return new LaravelCoinpayments($app);
         });
 
-        $this->loadMigrationsFrom(__DIR__ . '../../../database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../../../database/migrations');
     }
 
     /**
@@ -32,7 +32,7 @@ class LaravelCoinpaymentsServiceProvider extends ServiceProvider {
     public function register()
     {
         $this->mergeConfigFrom(
-           __DIR__ . '../../../config/coinpayments.php', 'coinpayments'
+           __DIR__ . '/../../../config/coinpayments.php', 'coinpayments'
         );
     }
 }
