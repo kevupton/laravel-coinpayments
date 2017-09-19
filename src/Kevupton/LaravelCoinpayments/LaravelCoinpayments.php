@@ -3,9 +3,7 @@
 namespace Kevupton\LaravelCoinpayments;
 
 use Illuminate\Http\Request;
-use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsException;
 use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsResponseError;
-use Kevupton\LaravelCoinpayments\Exceptions\IpnIncompleteException;
 use Kevupton\LaravelCoinpayments\Models\Ipn;
 use Kevupton\LaravelCoinpayments\Models\Log;
 use Kevupton\LaravelCoinpayments\Models\Model;
@@ -78,7 +76,7 @@ class LaravelCoinpayments extends Coinpayments {
     }
 
     /**
-     * @param Request|array $request
+     * @param array $request
      * @param array|null $server
      * @return Ipn
      * @throws \Exception
