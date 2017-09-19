@@ -2,13 +2,13 @@
 
 use Kevupton\LaravelCoinpayments\Models\Log;
 
-if (!function_exists('cp_prefix')) {
+if (!function_exists('cp_table_prefix')) {
     /**
      * Gets the prefix of the database table.
      *
      * @return string
      */
-    function cp_prefix() {
+    function cp_table_prefix() {
         return cp_conf('database_prefix');
     }
 }
@@ -28,6 +28,16 @@ if (!function_exists('cp_conf')) {
     }
 }
 
+if (!function_exists('cp_log_level')) {
+    /**
+     * Gets the specified log level for the config.
+     *
+     * @return number
+     */
+    function cp_log_level() {
+        return cp_conf('log_level', Log::LEVEL_NONE);
+    }
+}
 
 if (!function_exists('cp_log')) {
     /**

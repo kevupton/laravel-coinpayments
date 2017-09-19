@@ -13,7 +13,9 @@ class SetupCoinpaymentTables extends Migration
      */
     public function up()
     {
-        Schema::create(CP_TABLE_PREFIX . 'transactions', function (Blueprint $table) {
+        $prefix = cp_table_prefix();
+        
+        Schema::create($prefix . 'transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('amount');
             $table->string('currency1', 10);
@@ -34,7 +36,7 @@ class SetupCoinpaymentTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create(CP_TABLE_PREFIX . 'transfers', function (Blueprint $table) {
+        Schema::create($prefix . 'transfers', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('amount');
             $table->string('currency', 10);
@@ -46,7 +48,7 @@ class SetupCoinpaymentTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create(CP_TABLE_PREFIX . 'withdrawals', function (Blueprint $table) {
+        Schema::create($prefix . 'withdrawals', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('amount');
             $table->string('currency', 10);
@@ -62,12 +64,12 @@ class SetupCoinpaymentTables extends Migration
             $table->timestamps();
         });
 
-        Schema::create(CP_TABLE_PREFIX . 'ipns', function (Blueprint $table) {
+        Schema::create($prefix . 'ipns', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
         });
 
-        Schema::create(CP_TABLE_PREFIX . 'log', function (Blueprint $table) {
+        Schema::create($prefix . 'log', function (Blueprint $table) {
            $table->increments('id');
            $table->string('type', 32)->nullable();
            $table->text('log');
@@ -86,9 +88,11 @@ class SetupCoinpaymentTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(CP_TABLE_PREFIX . 'log');
-        Schema::dropIfExists(CP_TABLE_PREFIX . 'ipns');
-        Schema::dropIfExists(CP_TABLE_PREFIX . 'transfers');
-        Schema::dropIfExists(CP_TABLE_PREFIX . 'transaction');
+        $prefix = cp_table_prefix();
+
+        Schema::dropIfExists($prefix . 'log');
+        Schema::dropIfExists($prefix . 'ipns');
+        Schema::dropIfExists($prefix . 'transfers');
+        Schema::dropIfExists($prefix . 'transaction');
     }
 }

@@ -17,6 +17,6 @@ class Model extends EloquentModel
      */
     public function getTable()
     {
-        return CP_TABLE_PREFIX . parent::getTable();
+        return cp_table_prefix() . parent::getTable();
     }
 }

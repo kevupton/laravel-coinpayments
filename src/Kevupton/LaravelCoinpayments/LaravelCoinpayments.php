@@ -72,9 +72,11 @@ class LaravelCoinpayments extends Coinpayments {
      */
     private function logCall (Receipt $receipt) {
 
+        $log_level = cp_log_level();
+
         // check if this request should be logged
-        if (!(CP_LOG_LEVEL === Log::LEVEL_ALL ||
-            CP_LOG_LEVEL === Log::LEVEL_ERROR && $receipt->hasError())) return;
+        if (!($log_level === Log::LEVEL_ALL ||
+            $log_level === Log::LEVEL_ERROR && $receipt->hasError())) return;
 
         cp_log(json_encode([
             'request' => $receipt->getRequest(),
