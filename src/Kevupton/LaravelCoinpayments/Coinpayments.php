@@ -9,20 +9,20 @@ use Kevupton\LaravelCoinpayments\Exceptions\MessageSendException;
 class Coinpayments
 {
 
-    private $merchant_id = '';
-    private $ipn_secret = '';
-    private $private_key = '';
-    private $public_key = '';
-    private $ch = null;
+    private $merchant_id;
+    private $ipn_secret;
+    private $private_key;
+    private $public_key;
     private $ipn_url;
     private $format;
+    private $ch = null;
 
     public function __construct($private_key, $public_key, $merchant_id, $ipn_secret, $ipn_url, $format = 'json')
     {
-        $this->ipn_secret = $ipn_secret;
         $this->merchant_id = $merchant_id;
-        $this->private_key = $private_key;
         $this->public_key = $public_key;
+        $this->private_key = $private_key;
+        $this->ipn_secret = $ipn_secret;
         $this->ipn_url = $ipn_url;
         $this->format = $format;
         $this->ch = null;
