@@ -105,7 +105,7 @@ class LaravelCoinpayments extends Coinpayments {
             if ($is_complete) {
                 return $ipn;
             } else {
-                throw new IpnIncompleteException($request['status_text']);
+                throw new IpnIncompleteException($request['status_text'], $ipn);
             }
         }
         catch (CoinPaymentsException $e) {
