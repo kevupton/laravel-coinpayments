@@ -98,7 +98,17 @@ class LaravelCoinpayments extends Coinpayments {
             cp_log($log_data, 'IPN_RECEIVED', Log::LEVEL_ALL);
 
             $is_complete    = parent::validateIPN($request, $server);
-            $ipn            = Ipn::create($request);
+
+            // create or update the existing IPN record
+            try {
+                $ipn = Ipn::where('ipn_id', $request['ipn_id'])->firstOrFail();
+            }
+            catch (\Exception $e) {
+                $ipn = new Ipn();
+            }
+
+            $ipn->fill($request);
+            $ipn->save();
 
             // only return the ipn if it was successful, otherwise throw an exception
             // we do it like this so we can record the ipn either way.
