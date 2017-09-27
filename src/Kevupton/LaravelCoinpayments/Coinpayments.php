@@ -254,8 +254,8 @@ class Coinpayments
         $req['version'] = 1;
         $req['cmd'] = $cmd;
         $req['key'] = $this->public_key;
-        $req['format'] = isset($req['format']) ? $req['format'] : $this->format; //supported values are json and xml
-        $req['ipn_url'] = isset($req['ipn_url']) ? $req['ipn_url'] : $this->ipn_url;
+        $req['format'] = isset($req['format']) && !empty($req['ipn_url']) ? $req['format'] : $this->format; //supported values are json and xml
+        $req['ipn_url'] = isset($req['ipn_url']) && !empty($req['ipn_url']) ? $req['ipn_url'] : $this->ipn_url;
 
         // Generate the query string
         $postData = http_build_query($req, '', '&');
