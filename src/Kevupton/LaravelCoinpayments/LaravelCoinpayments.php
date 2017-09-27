@@ -73,7 +73,7 @@ class LaravelCoinpayments extends Coinpayments {
                 return Transfer::create($receipt->toResultArray());
         }
 
-        return $receipt->getResponse()->result;
+        return $receipt->getResponse()['result'];
 
     }
 
