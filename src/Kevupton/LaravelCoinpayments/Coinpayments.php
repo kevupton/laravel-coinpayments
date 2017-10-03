@@ -6,6 +6,7 @@ use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsException;
 use Kevupton\LaravelCoinpayments\Exceptions\IpnIncompleteException;
 use Kevupton\LaravelCoinpayments\Exceptions\JsonParseException;
 use Kevupton\LaravelCoinpayments\Exceptions\MessageSendException;
+use Kevupton\LaravelCoinpayments\Models\Log;
 
 class Coinpayments
 {
@@ -284,8 +285,16 @@ class Coinpayments
         }
 
         // If you are using PHP 5.5.0 or higher you can use json_last_error_msg() for a better error message
-        if ($response === null || !count($response))
+        if ($response === null || !count($response)) {
+            cp_log(
+                [
+                    'data' => $data
+                ],
+                'JSON_ERROR',
+                Log::LEVEL_ERROR
+            );
             throw new JsonParseException('Unable to parse JSON result (' . json_last_error() . ')');
+        }
 
         return new Receipt($cmd, $req, $response);
     }
