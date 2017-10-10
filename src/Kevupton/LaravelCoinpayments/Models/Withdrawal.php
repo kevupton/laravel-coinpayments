@@ -33,4 +33,9 @@ class Withdrawal extends Model
         'pbntag', 'dest_tag', 'ipn_url', 'auto_confirm',
         'note', 'ref_id', 'status'
     ];
+
+    public function setIdAttribute ($value)
+    {
+        $this->attributes['ref_id'] = $value;
+    }
 }

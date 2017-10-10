@@ -46,4 +46,20 @@ class Ipn extends Model
         // If $order_status is >100 or is 2, return true
         return $this->status >= 100 || $this->status == 2;
     }
+
+    public function isWithdrawal () {
+        return $this->ipn_type === 'withdrawal';
+    }
+
+    public function isApi () {
+        return $this->ipn_type === 'api';
+    }
+
+    public function isSimpleButton () {
+        return $this->ipn_type === 'simple';
+    }
+
+    public function isAdvancedButton () {
+        return $this->ipn_type === 'button';
+    }
 }

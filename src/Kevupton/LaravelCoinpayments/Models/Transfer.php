@@ -28,4 +28,9 @@ class Transfer extends Model
         'amount', 'currency', 'merchant', 'pbntag',
         'auto_confirm', 'ref_id', 'status'
     ];
+
+    public function setIdAttribute ($value)
+    {
+        $this->attributes['ref_id'] = $value;
+    }
 }
