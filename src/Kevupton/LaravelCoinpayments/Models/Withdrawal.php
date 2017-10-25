@@ -31,6 +31,6 @@ class Withdrawal extends Model
     public $fillable = [
         'amount', 'currency', 'currency2', 'address',
         'pbntag', 'dest_tag', 'ipn_url', 'auto_confirm',
-        'note', 'status'
+        'note', 'ref_id', 'status'
     ];
 }

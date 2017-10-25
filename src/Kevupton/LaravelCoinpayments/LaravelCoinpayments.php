@@ -64,13 +64,20 @@ class LaravelCoinpayments extends Coinpayments {
         if ($has_error)
             throw new CoinPaymentsResponseError($receipt->getError());
 
+        $data = $receipt->toResultArray();
+
+        if (isset($data['id'])) {
+            $data['ref_id'] = $data['id'];
+            unset($data['id']);
+        }
+
         switch ($receipt->getCommand()) {
             case CoinpaymentsCommands::CREATE_TRANSACTION:
-                return Transaction::create($receipt->toResultArray());
+                return Transaction::create($data);
             case CoinpaymentsCommands::CREATE_WITHDRAWAL:
-                return Withdrawal::create($receipt->toResultArray());
+                return Withdrawal::create($data);
             case CoinpaymentsCommands::CREATE_TRANSFER:
-                return Transfer::create($receipt->toResultArray());
+                return Transfer::create($data);
         }
 
         return $receipt->getResponse()['result'];
