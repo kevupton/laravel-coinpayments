@@ -17,7 +17,6 @@ namespace Kevupton\LaravelCoinpayments\Models;
  * @property mixed merchant
  * @property mixed pbntag
  * @property mixed auto_confirm
- * @property mixed ref_id
  * @property mixed status
  * @property mixed created_at
  * @property mixed updated_at
@@ -26,11 +25,6 @@ class Transfer extends Model
 {
     public $fillable = [
         'amount', 'currency', 'merchant', 'pbntag',
-        'auto_confirm', 'ref_id', 'status'
+        'auto_confirm', 'status'
     ];
-
-    public function setIdAttribute ($value)
-    {
-        $this->attributes['ref_id'] = $value;
-    }
 }

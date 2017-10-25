@@ -31,11 +31,6 @@ class Withdrawal extends Model
     public $fillable = [
         'amount', 'currency', 'currency2', 'address',
         'pbntag', 'dest_tag', 'ipn_url', 'auto_confirm',
-        'note', 'ref_id', 'status'
+        'note', 'status'
     ];
-
-    public function setIdAttribute ($value)
-    {
-        $this->attributes['ref_id'] = $value;
-    }
 }

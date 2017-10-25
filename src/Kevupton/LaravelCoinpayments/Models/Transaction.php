@@ -39,9 +39,4 @@ class Transaction extends Model
         'invoice', 'custom', 'ipn_url', 'txn_id',
         'confirms_needed', 'timeout', 'status_url', 'qrcode_url',
     ];
-
-    public function setIdAttribute ($value)
-    {
-        $this->attributes['ref_id'] = $value;
-    }
 }
