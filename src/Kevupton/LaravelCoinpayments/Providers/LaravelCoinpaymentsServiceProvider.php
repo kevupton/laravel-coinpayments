@@ -1,5 +1,6 @@
 <?php namespace Kevupton\LaravelCoinpayments\Providers;
 
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Kevupton\LaravelCoinpayments\Facades\Coinpayments;
 use Kevupton\LaravelCoinpayments\LaravelCoinpayments;
@@ -17,13 +18,7 @@ class LaravelCoinpaymentsServiceProvider extends ServiceProvider {
     {
         $this->publishes([__DIR__ . '/../../../config/coinpayments.php' => config_path('coinpayments.php')]);
 
-        app()->singleton(self::SINGLETON, function ($app) {
-           return new LaravelCoinpayments($app);
-        });
-
         $this->loadMigrationsFrom(__DIR__ . '/../../../database/migrations');
-
-        class_alias(Coinpayments::class, 'Coinpayments');
     }
 
     /**
@@ -33,6 +28,12 @@ class LaravelCoinpaymentsServiceProvider extends ServiceProvider {
      */
     public function register()
     {
+        app()->singleton(self::SINGLETON, function ($app) {
+            return new LaravelCoinpayments($app);
+        });
+
+        AliasLoader::getInstance()->alias('Coinpayments', Coinpayments::class);
+
         $this->mergeConfigFrom(
            __DIR__ . '/../../../config/coinpayments.php', 'coinpayments'
         );
