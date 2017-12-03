@@ -5,7 +5,8 @@ use Illuminate\Support\ServiceProvider;
 use Kevupton\LaravelCoinpayments\Facades\Coinpayments;
 use Kevupton\LaravelCoinpayments\LaravelCoinpayments;
 
-class LaravelCoinpaymentsServiceProvider extends ServiceProvider {
+class LaravelCoinpaymentsServiceProvider extends ServiceProvider
+{
 
     const SINGLETON = 'coinpayments';
 
@@ -14,7 +15,7 @@ class LaravelCoinpaymentsServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function boot()
+    public function boot ()
     {
         $this->publishes([__DIR__ . '/../../../config/coinpayments.php' => config_path('coinpayments.php')]);
 
@@ -26,16 +27,24 @@ class LaravelCoinpaymentsServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function register()
+    public function register ()
     {
-        app()->singleton(self::SINGLETON, function ($app) {
+        $app = app();
+
+        $app->singleton(self::SINGLETON, function ($app) {
             return new LaravelCoinpayments($app);
         });
 
-        AliasLoader::getInstance()->alias('Coinpayments', Coinpayments::class);
+        if (is_a($app, 'Illuminate\Foundation\Application')) {
+            AliasLoader::getInstance()->alias('Coinpayments', Coinpayments::class);
+        } elseif (is_a($app, 'Laravel\Lumen\Application')) {
+            if (!class_exists('Coinpayments')) {
+                class_alias(Coinpayments::class, 'Coinpayments');
+            }
+        }
 
         $this->mergeConfigFrom(
-           __DIR__ . '/../../../config/coinpayments.php', 'coinpayments'
+            __DIR__ . '/../../../config/coinpayments.php', 'coinpayments'
         );
     }
 }
