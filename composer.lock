@@ -4,9 +4,44 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3a529e0099b977f807bf2109eb83e877",
-    "content-hash": "aac6a27a310b569db276a04358cc3d2a",
-    "packages": [],
+    "hash": "adc1819f70636b43ede303a2279e6ed8",
+    "content-hash": "08797e973779d7be47c7a95f3fda3b65",
+    "packages": [
+        {
+            "name": "kevupton/laravel-package-service-provider",
+            "version": "v0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kevupton/laravel-package-service-provider.git",
+                "reference": "b479f7ac655acee658c78907fc76e0c8f90339b3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kevupton/laravel-package-service-provider/zipball/b479f7ac655acee658c78907fc76e0c8f90339b3",
+                "reference": "b479f7ac655acee658c78907fc76e0c8f90339b3",
+                "shasum": ""
+            },
+            "require-dev": {
+                "laravel/laravel": "^5.5",
+                "laravel/lumen": "^5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Kevupton\\LaravelPackageServiceProvider\\": "src/Kevupton/LaravelPackageServiceProvider/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Kevin upton",
+                    "email": "uptonkg@gmail.com"
+                }
+            ],
+            "description": "Service provider for laravel to allow for multiple implementations",
+            "time": "2017-12-03 08:43:54"
+        }
+    ],
     "packages-dev": [
         {
             "name": "dnoegel/php-xdg-base-dir",

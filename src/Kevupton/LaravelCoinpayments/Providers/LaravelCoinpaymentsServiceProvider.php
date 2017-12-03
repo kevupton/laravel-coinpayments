@@ -1,9 +1,8 @@
 <?php namespace Kevupton\LaravelCoinpayments\Providers;
 
-use Illuminate\Foundation\AliasLoader;
-use Illuminate\Support\ServiceProvider;
 use Kevupton\LaravelCoinpayments\Facades\Coinpayments;
 use Kevupton\LaravelCoinpayments\LaravelCoinpayments;
+use Kevupton\LaravelPackageServiceProvider\ServiceProvider;
 
 class LaravelCoinpaymentsServiceProvider extends ServiceProvider
 {
@@ -17,7 +16,7 @@ class LaravelCoinpaymentsServiceProvider extends ServiceProvider
      */
     public function boot ()
     {
-        $this->publishes([__DIR__ . '/../../../config/coinpayments.php' => config_path('coinpayments.php')]);
+        $this->registerConfig('/../../../config/coinpayments.php', 'coinpayments.php');
 
         $this->loadMigrationsFrom(__DIR__ . '/../../../database/migrations');
     }
@@ -29,19 +28,11 @@ class LaravelCoinpaymentsServiceProvider extends ServiceProvider
      */
     public function register ()
     {
-        $app = app();
-
-        $app->singleton(self::SINGLETON, function ($app) {
+        $this->app->singleton(self::SINGLETON, function ($app) {
             return new LaravelCoinpayments($app);
         });
 
-        if (is_a($app, 'Illuminate\Foundation\Application')) {
-            AliasLoader::getInstance()->alias('Coinpayments', Coinpayments::class);
-        } elseif (is_a($app, 'Laravel\Lumen\Application')) {
-            if (!class_exists('Coinpayments')) {
-                class_alias(Coinpayments::class, 'Coinpayments');
-            }
-        }
+        $this->registerAlias(Coinpayments::class, 'Coinpayments');
 
         $this->mergeConfigFrom(
             __DIR__ . '/../../../config/coinpayments.php', 'coinpayments'
