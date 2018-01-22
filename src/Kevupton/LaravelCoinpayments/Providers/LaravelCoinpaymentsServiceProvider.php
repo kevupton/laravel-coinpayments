@@ -16,7 +16,7 @@ class LaravelCoinpaymentsServiceProvider extends ServiceProvider
      */
     public function boot ()
     {
-        $this->registerConfig('/../../../config/coinpayments.php', 'coinpayments.php');
+        $this->registerConfig(__DIR__ . '/../../../config/coinpayments.php', 'coinpayments.php');
 
         $this->loadMigrationsFrom(__DIR__ . '/../../../database/migrations');
     }
