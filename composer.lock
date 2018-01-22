@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "adc1819f70636b43ede303a2279e6ed8",
-    "content-hash": "08797e973779d7be47c7a95f3fda3b65",
+    "hash": "e5fc98897e75ee662f3affa87ca907f9",
+    "content-hash": "0436248aac2093689a35806eb42a1f61",
     "packages": [
         {
             "name": "kevupton/laravel-package-service-provider",
-            "version": "v0.0.2",
+            "version": "v0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kevupton/laravel-package-service-provider.git",
-                "reference": "b479f7ac655acee658c78907fc76e0c8f90339b3"
+                "reference": "a3bcbc9e2f44781b8f6c80195b1e66af7d329f57"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kevupton/laravel-package-service-provider/zipball/b479f7ac655acee658c78907fc76e0c8f90339b3",
-                "reference": "b479f7ac655acee658c78907fc76e0c8f90339b3",
+                "url": "https://api.github.com/repos/kevupton/laravel-package-service-provider/zipball/a3bcbc9e2f44781b8f6c80195b1e66af7d329f57",
+                "reference": "a3bcbc9e2f44781b8f6c80195b1e66af7d329f57",
                 "shasum": ""
             },
             "require-dev": {
@@ -39,7 +39,7 @@
                 }
             ],
             "description": "Service provider for laravel to allow for multiple implementations",
-            "time": "2017-12-03 08:43:54"
+            "time": "2018-01-22 11:39:49"
         }
     ],
     "packages-dev": [
@@ -2488,7 +2488,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.3"
+        "php": ">=5.5"
     },
     "platform-dev": []
 }
