@@ -13,6 +13,7 @@ namespace Kevupton\LaravelCoinpayments\Models;
  * @package Kevupton\LaravelCoinpayments\Models
  * @property mixed id
  * @property mixed amount
+ * @property mixed amounti
  * @property mixed currency
  * @property mixed currency2
  * @property mixed address
@@ -21,8 +22,9 @@ namespace Kevupton\LaravelCoinpayments\Models;
  * @property mixed ipn_url
  * @property mixed auto_confirm
  * @property mixed note
- * @property mixed ref_id
+ * @property mixed txn_id
  * @property mixed status
+ * @property mixed status_text
  * @property mixed created_at
  * @property mixed updated_at
  */
@@ -31,6 +33,6 @@ class Withdrawal extends Model
     public $fillable = [
         'amount', 'currency', 'currency2', 'address',
         'pbntag', 'dest_tag', 'ipn_url', 'auto_confirm',
-        'note', 'ref_id', 'status'
+        'note', 'ref_id', 'status', 'status_text', 'txn_id', 'amounti'
     ];
 }

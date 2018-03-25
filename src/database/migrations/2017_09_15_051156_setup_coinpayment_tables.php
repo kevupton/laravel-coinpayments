@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class SetupCoinpaymentTables extends Migration
 {
@@ -14,7 +14,7 @@ class SetupCoinpaymentTables extends Migration
     public function up()
     {
         $prefix = cp_table_prefix();
-        
+
         Schema::create($prefix . 'transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('amount');
@@ -91,10 +91,10 @@ class SetupCoinpaymentTables extends Migration
         });
 
         Schema::create($prefix . 'log', function (Blueprint $table) {
-           $table->increments('id');
-           $table->string('type', 32)->nullable();
-           $table->text('log');
-           $table->timestamps();
+            $table->increments('id');
+            $table->string('type', 32)->nullable();
+            $table->text('log');
+            $table->timestamps();
         });
     }
 
