@@ -8,7 +8,7 @@
 
 namespace Kevupton\LaravelCoinpayments\Events\Transaction;
 
-use App\Events\Event;
+use Kevupton\LaravelCoinpayments\Events\Event;
 use Kevupton\LaravelCoinpayments\Models\Transaction;
 
 class AbstractTransactionEvent extends Event
@@ -16,7 +16,7 @@ class AbstractTransactionEvent extends Event
     /**
      * @var Transaction
      */
-    private $transaction;
+    public $transaction;
 
     public function __construct (Transaction $transaction)
     {

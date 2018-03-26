@@ -55,8 +55,6 @@ class LaravelCoinpaymentsServiceProvider extends ServiceProvider
         $is_enabled = config('coinpayments.route.enabled');
         $path       = config('coinpayments.route.path');
 
-        var_dump($is_enabled);
-        die();
         if (!$is_enabled) {
             return;
         }

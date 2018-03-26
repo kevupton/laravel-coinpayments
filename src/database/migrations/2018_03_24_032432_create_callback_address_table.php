@@ -51,20 +51,20 @@ class CreateCallbackAddressTable extends Migration
         });
 
         Schema::table($prefix . 'withdrawals', function (Blueprint $table) {
-            $table->smallInteger('status')->tinyInteger('status')->change();
+            $table->smallInteger('status')->change();
             $table->string('amounti')->nullable()->after('amount');
             $table->string('txn_id', 128)->nullable()->unique();
         });
 
         Schema::table($prefix . 'transactions', function (Blueprint $table) {
-            $table->smallInteger('status')->tinyInteger('status')->nullable();
+            $table->smallInteger('status')->nullable();
             $table->string('status_text')->nullable();
             $table->string('received_confirms')->nullable();
             $table->string('received_amount')->nullable();
         });
 
         Schema::table($prefix . 'transfers', function (Blueprint $table) {
-            $table->smallInteger('status')->tinyInteger('status')->index()->change();
+            $table->smallInteger('status')->index()->change();
         });
 
         Schema::table($prefix . 'ipns', function (Blueprint $table) {
@@ -72,9 +72,20 @@ class CreateCallbackAddressTable extends Migration
             $table->string('amount')->nullable()->after('currency2');
             $table->string('amounti')->nullable()->after('amount');
             $table->string('currency')->nullable()->after('status_text');
-            $table->smallInteger('status')->tinyInteger('status')->nullable()->change();
+            $table->unsignedTinyInteger('confirms')->nullable()->after('currency2');
+            $table->smallInteger('status')->nullable()->change();
             $table->string('feei')->nullable()->after('fee');
             $table->string('dest_tag')->nullable()->after('feei');
+
+            // change existing to nullable
+            $table->string('ipn_type', 32)->nullable()->change();
+            $table->string('txn_id')->nullable()->change();
+            $table->string('status_text')->nullable()->change();
+            $table->string('currency1')->nullable()->change();
+            $table->string('currency2')->nullable()->change();
+            $table->string('amount1')->nullable()->change();
+            $table->string('amount2')->nullable()->change();
+            $table->string('fee')->nullable()->change();
         });
     }
 
@@ -86,6 +97,30 @@ class CreateCallbackAddressTable extends Migration
     public function down()
     {
         $prefix = cp_table_prefix();
+
+        Schema::table($prefix . 'ipns', function (Blueprint $table) {
+            $table->dropIndex(['address']);
+            $table->dropColumn('address');
+            $table->dropColumn('amount');
+            $table->dropColumn('amounti');
+            $table->dropColumn('confirms');
+            $table->dropColumn('currency');
+            $table->dropColumn('feei');
+            $table->dropColumn('dest_tag');
+        });
+
+        Schema::table($prefix . 'transactions', function (Blueprint $table) {
+            $table->dropColumn('status');
+            $table->dropColumn('status_text');
+            $table->dropColumn('received_confirms');
+            $table->dropColumn('received_amount');
+        });
+
+        Schema::table($prefix . 'withdrawals', function (Blueprint $table) {
+            $table->dropColumn('amounti');
+            $table->dropUnique(['txn_id']);
+            $table->dropColumn('txn_id');
+        });
 
         Schema::dropIfExists($prefix . 'deposits');
         Schema::dropIfExists($prefix . 'callback_addresses');

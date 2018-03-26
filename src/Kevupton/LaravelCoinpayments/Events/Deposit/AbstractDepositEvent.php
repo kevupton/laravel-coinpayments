@@ -8,7 +8,7 @@
 
 namespace Kevupton\LaravelCoinpayments\Events\Deposit;
 
-use App\Events\Event;
+use Kevupton\LaravelCoinpayments\Events\Event;
 use Kevupton\LaravelCoinpayments\Models\Deposit;
 
 abstract class AbstractDepositEvent extends Event
@@ -16,7 +16,7 @@ abstract class AbstractDepositEvent extends Event
     /**
      * @var Deposit
      */
-    private $deposit;
+    public $deposit;
 
     public function __construct (Deposit $deposit)
     {

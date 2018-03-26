@@ -8,15 +8,15 @@
 
 namespace Kevupton\LaravelCoinpayments\Events\Withdrawal;
 
-
+use Kevupton\LaravelCoinpayments\Events\Event;
 use Kevupton\LaravelCoinpayments\Models\Withdrawal;
 
-class AbstractWithdrawalEvent
+class AbstractWithdrawalEvent extends Event
 {
     /**
      * @var Withdrawal
      */
-    private $withdrawal;
+    public $withdrawal;
 
     public function __construct (Withdrawal $withdrawal)
     {
