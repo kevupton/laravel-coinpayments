@@ -1,7 +1,8 @@
 # Laravel Coinpayments #
 Implementation of most of the CoinPayments functionality. 
 
-### [Coinpayments Website](https://www.coinpayments.net/index.php?ref=a458c004de21a18c71849871781be820)
+[![Coinpayments Website](https://www.coinpayments.net/images/b/821661e7a0604282da58f3f0e43e1888576f55f64458f53b193c90a9262a4e2e.png
+)](https://www.coinpayments.net/index.php?ref=a458c004de21a18c71849871781be820)
 
 ### [Example API](https://github.com/kevupton/example-laravel-coinpayments)
 
@@ -92,16 +93,21 @@ php artisan migrate
 
 ### 4. Usage
 
-Simple transaction
+Simple Transaction
 ```php
-
-\Coinpayments::createTransactionSimple($cost, $currency_base, $currency_received, $extra_details);
-
+$transaction = \Coinpayments::createTransactionSimple($cost, $currency_base, $currency_received, $extra_details);
 ```
-
+Callback Address
+```php
+$callbackAddress = \Coinpayments::getCallbackAddress($currency);
+```
+Withdrawal
+```php
+$withdrawal = \Coinpayments::createWithdrawal($amount, $currency, $address, true);
+```
 #### IPN validation
 Laravel Coinpayments can automatically handle IPN's for you:
-Just specify, the path and enable it using the env varaibles.
+Just specify, the path and enable it using the env variables.
 
 ```
 COINPAYMENTS_IPN_ROUTE_ENABLED=true
