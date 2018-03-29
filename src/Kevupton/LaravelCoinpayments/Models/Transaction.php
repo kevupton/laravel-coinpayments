@@ -25,6 +25,10 @@ namespace Kevupton\LaravelCoinpayments\Models;
  * @property mixed ipn_url
  * @property mixed txn_id
  * @property mixed confirms_needed
+ * @property mixed received_amount
+ * @property mixed received_confirms
+ * @property mixed status
+ * @property mixed status_text
  * @property mixed timeout
  * @property mixed status_url
  * @property mixed qrcode_url
@@ -38,5 +42,6 @@ class Transaction extends Model
         'buyer_email', 'buyer_name', 'item_name', 'item_number',
         'invoice', 'custom', 'ipn_url', 'txn_id',
         'confirms_needed', 'timeout', 'status_url', 'qrcode_url',
+        'received_amount', 'received_confirms', 'status', 'status_text'
     ];
 }

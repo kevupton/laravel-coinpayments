@@ -9,7 +9,9 @@
 namespace Kevupton\LaravelCoinpayments;
 
 
-class Receipt
+use Illuminate\Contracts\Support\Arrayable;
+
+class Receipt implements Arrayable
 {
 
     private $command;
@@ -62,9 +64,11 @@ class Receipt
     }
 
     /**
+     * Get the instance as an array.
+     *
      * @return array
      */
-    public function toResultArray () {
+    public function toArray () {
         return array_merge($this->request, $this->response['result']);
     }
 }
