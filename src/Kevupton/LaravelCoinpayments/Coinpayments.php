@@ -2,6 +2,7 @@
 
 namespace Kevupton\LaravelCoinpayments;
 
+use Kevupton\LaravelCoinpayments\Enums\CoinpaymentsCommands;
 use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsException;
 use Kevupton\LaravelCoinpayments\Exceptions\IpnIncompleteException;
 use Kevupton\LaravelCoinpayments\Exceptions\JsonParseException;

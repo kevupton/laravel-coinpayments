@@ -1,6 +1,6 @@
 <?php
 
-namespace Kevupton\LaravelCoinpayments;
+namespace Kevupton\LaravelCoinpayments\Enums;
 
 abstract class CoinpaymentsCommands {
     const CREATE_TRANSACTION = 'create_transaction';
