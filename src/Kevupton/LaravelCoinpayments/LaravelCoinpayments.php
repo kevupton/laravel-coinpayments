@@ -3,6 +3,7 @@
 namespace Kevupton\LaravelCoinpayments;
 
 use Illuminate\Http\Request;
+use Kevupton\LaravelCoinpayments\Enums\CoinpaymentsCommands;
 use Kevupton\LaravelCoinpayments\Enums\IpnType;
 use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsException;
 use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsResponseError;
