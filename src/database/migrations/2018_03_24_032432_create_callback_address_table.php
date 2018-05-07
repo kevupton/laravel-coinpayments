@@ -122,6 +122,10 @@ class CreateCallbackAddressTable extends Migration
             $table->dropColumn('txn_id');
         });
 
+        Schema::table($prefix . 'transfers', function (Blueprint $table) {
+            $table->dropIndex(['status']);
+        });
+
         Schema::dropIfExists($prefix . 'deposits');
         Schema::dropIfExists($prefix . 'callback_addresses');
     }
