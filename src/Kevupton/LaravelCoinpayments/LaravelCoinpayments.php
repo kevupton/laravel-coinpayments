@@ -83,6 +83,10 @@ class LaravelCoinpayments extends Coinpayments
 
         switch ($receipt->getCommand()) {
             case CoinpaymentsCommands::CREATE_TRANSACTION:
+                // the currency1 we sent to coinpayments
+                $data['amount1'] = $req['amount'];
+                // the currency2 coinpayments returned to us
+                $data['amount2'] = $data['amount'];
                 return Transaction::create($data);
             case CoinpaymentsCommands::CREATE_WITHDRAWAL:
                 return Withdrawal::create($data);

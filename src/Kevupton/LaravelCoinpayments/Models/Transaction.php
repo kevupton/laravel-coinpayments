@@ -12,7 +12,8 @@ namespace Kevupton\LaravelCoinpayments\Models;
  * Class Transaction
  * @package Kevupton\LaravelCoinpayments\Models
  * @property mixed id
- * @property mixed amount
+ * @property mixed amount1
+ * @property mixed amount2
  * @property mixed currency1
  * @property mixed currency2
  * @property mixed address
