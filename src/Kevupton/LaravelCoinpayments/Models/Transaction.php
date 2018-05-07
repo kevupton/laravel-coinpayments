@@ -38,7 +38,7 @@ namespace Kevupton\LaravelCoinpayments\Models;
 class Transaction extends Model
 {
     public $fillable = [
-        'amount', 'currency1', 'currency2', 'address',
+        'amount1', 'amount2', 'currency1', 'currency2', 'address',
         'buyer_email', 'buyer_name', 'item_name', 'item_number',
         'invoice', 'custom', 'ipn_url', 'txn_id',
         'confirms_needed', 'timeout', 'status_url', 'qrcode_url',
