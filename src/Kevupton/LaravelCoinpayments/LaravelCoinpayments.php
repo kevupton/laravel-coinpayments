@@ -109,7 +109,9 @@ class LaravelCoinpayments extends Coinpayments
             'request' => $request,
             'headers' => $headers,
             'server'  => array_intersect_key($server, [
-                'PHP_AUTH_USER', 'PHP_AUTH_PW',
+                'PHP_AUTH_USER' => '',
+                'PHP_AUTH_PW' => '',
+                'HTTP_HMAC' => ''
             ]),
         ];
 

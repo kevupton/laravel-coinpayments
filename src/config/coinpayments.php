@@ -26,7 +26,7 @@ return [
     'format'          => env('COINPAYMENTS_API_FORMAT', 'json'),
 
     // ALL logs all requests, ERROR logs only errors, and NONE never
-    'log_level'       => Log::LEVEL_ERROR,
+    'log_level'       => env('COINPAYMENTS_LOG_LEVEL', Log::LEVEL_ERROR),
 
     // Whether or not to have coinpayments automatically parse IPN's for you. If so please specify a PATH
     'route'           => [
