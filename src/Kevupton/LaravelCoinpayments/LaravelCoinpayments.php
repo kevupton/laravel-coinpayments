@@ -164,15 +164,28 @@ class LaravelCoinpayments extends Coinpayments
         $condition = ['txn_id' => $txn_id];
         switch ($ipn_type) {
             case IpnType::DEPOSIT:
-                Deposit::updateOrCreate($condition, $ipn->toArray());
+                Deposit::updateOrCreate($condition, $this->filterNullable($ipn->toArray()));
                 break;
             case IpnType::API:
-                Transaction::updateOrCreate($condition, $ipn->toArray());
+                Transaction::updateOrCreate($condition, $this->filterNullable($ipn->toArray()));
                 break;
             case IpnType::WITHDRAW:
-                Withdrawal::updateOrCreate($condition, $ipn->toArray());
+                Withdrawal::updateOrCreate($condition, $this->filterNullable($ipn->toArray()));
                 break;
         }
+    }
+
+    /**
+     * Removes all of the nullable values from an array.
+     * This way the values wont overwrite existing possible values.
+     *
+     * @param $array
+     * @return array
+     */
+    private function filterNullable($array) {
+        return collect($array)->filter(function ($value) {
+           return !is_null($value);
+        })->toArray();
     }
 
     /**
