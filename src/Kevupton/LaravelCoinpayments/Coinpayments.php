@@ -2,9 +2,9 @@
 
 namespace Kevupton\LaravelCoinpayments;
 
-use Kevupton\LaravelCoinpayments\Enums\CoinpaymentsCommands;
+use Illuminate\Validation\ValidationException;
+use Kevupton\LaravelCoinpayments\Enums\CoinpaymentsCommand;
 use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsException;
-use Kevupton\LaravelCoinpayments\Exceptions\IpnIncompleteException;
 use Kevupton\LaravelCoinpayments\Exceptions\JsonParseException;
 use Kevupton\LaravelCoinpayments\Exceptions\MessageSendException;
 use Kevupton\LaravelCoinpayments\Models\Log;
@@ -20,55 +20,69 @@ class Coinpayments
     private $format;
     private $ch = null;
 
-    public function __construct($private_key, $public_key, $merchant_id, $ipn_secret, $ipn_url, $format = 'json')
+    public function __construct ($private_key, $public_key, $merchant_id, $ipn_secret, $ipn_url, $format = 'json')
     {
         $this->merchant_id = $merchant_id;
-        $this->public_key = $public_key;
+        $this->public_key  = $public_key;
         $this->private_key = $private_key;
-        $this->ipn_secret = $ipn_secret;
-        $this->ipn_url = $ipn_url;
-        $this->format = $format;
+        $this->ipn_secret  = $ipn_secret;
+        $this->ipn_url     = $ipn_url;
+        $this->format      = $format;
     }
 
     /**
      * Gets the current CoinPayments.net exchange rate. Output includes both crypto and fiat currencies.
-     * @param bool $short short == true (the default), the output won't include the currency names and confirms needed to save bandwidth.
+     *
+     * @param bool $short short == true (the default), the output won't include the currency names and confirms needed
+     *                    to save bandwidth.
      * @param bool $accepted
      * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
      */
-    public function getRates($short = true, $accepted = true)
+    public function getRates ($short = true, $accepted = true)
     {
-        return $this->apiCall(CoinpaymentsCommands::RATES, ['short' => (int)$short, 'accepted' => (int)$accepted]);
+        return $this->apiCall(CoinpaymentsCommand::RATES, ['short' => (int)$short, 'accepted' => (int)$accepted]);
     }
 
     /**
      * Gets your current coin balances (only includes coins with a balance unless all = true).<br />
+     *
      * @param bool $all all = true then it will return all coins, even those with a 0 balance.
      * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
      */
-    public function getBalances($all = false)
+    public function getBalances ($all = false)
     {
-        return $this->apiCall(CoinpaymentsCommands::BALANCES, array('all' => $all ? 1 : 0));
+        return $this->apiCall(CoinpaymentsCommand::BALANCES, ['all' => $all ? 1 : 0]);
     }
 
     /**
      * Creates a basic transaction with minimal parameters.<br />
      * See CreateTransaction for more advanced features.
-     * @param mixed $amount The amount of the transaction (floating point to 8 decimals).
-     * @param string $currencyIn The source currency (ie. USD), this is used to calculate the exchange rate for you.
-     * @param string $currencyOut The cryptocurrency of the transaction. currency1 and currency2 can be the same if you don't want any exchange rate conversion.
-     * @param array $additional Optionally set additional fields.
+     *
+     * @param mixed  $amount      The amount of the transaction (floating point to 8 decimals).
+     * @param string $currencyIn  The source currency (ie. USD), this is used to calculate the exchange rate for you.
+     * @param string $currencyOut The cryptocurrency of the transaction. currency1 and currency2 can be the same if you
+     *                            don't want any exchange rate conversion.
+     * @param array  $additional  Optionally set additional fields.
      * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
      */
-    public function createTransactionSimple($amount, $currencyIn, $currencyOut, $additional = [])
+    public function createTransactionSimple ($amount, $currencyIn, $currencyOut, $additional = [])
     {
         $acceptableFields = [
             'address', 'buyer_email', 'buyer_name',
-            'item_name', 'item_number', 'invoice', 'custom', 'ipn_url'
+            'item_name', 'item_number', 'invoice', 'custom', 'ipn_url',
         ];
 
         $request = [
-            'amount' => $amount,
+            'amount'    => $amount,
             'currency1' => $currencyIn,
             'currency2' => $currencyOut,
         ];
@@ -79,112 +93,189 @@ class Coinpayments
             }
         }
 
-        return $this->apiCall(CoinpaymentsCommands::CREATE_TRANSACTION, $request);
+        return $this->apiCall(CoinpaymentsCommand::CREATE_TRANSACTION, $request);
     }
 
     /**
      * @param $req
      * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
      */
-    public function createTransaction($req)
+    public function createTransaction ($req)
     {
         // See https://www.coinpayments.net/apidoc-create-transaction for parameters
-        return $this->apiCall(CoinpaymentsCommands::CREATE_TRANSACTION, $req);
+        return $this->apiCall(CoinpaymentsCommand::CREATE_TRANSACTION, $req);
+    }
+
+    /**
+     * @param $amount
+     * @param $from
+     * @param $to
+     * @param $address
+     * @return Receipt
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
+     */
+    public function convertCoins ($amount, $from, $to, $address = null)
+    {
+        $req = [
+            'amount'  => $amount,
+            'from'    => $from,
+            'to'      => $to,
+            'address' => $address,
+        ];
+        return $this->apiCall(CoinpaymentsCommand::CONVERT, $req);
+    }
+
+    /**
+     * @param $withdrawals
+     * @return Receipt
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
+     */
+    public function createMassWithdrawal ($withdrawals)
+    {
+        $req = collect($withdrawals)->flatMap(function ($withdrawal, $index) {
+            // the minimum required values for it to work.
+            $validator = validator($withdrawal, [
+                'amount'   => 'required|numeric',
+                'address'  => 'required|string',
+                'currency' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+            return collect($withdrawal)->flatMap(function ($value, $key) use ($index) {
+               return ["wd[wd$index][$key]" => $value];
+            })->toArray();
+        })->toArray();
+
+        return $this->apiCall(CoinpaymentsCommand::CREATE_MASS_WITHDRAWAL, $req);
     }
 
     /**
      * Get transaction information via transaction ID
      *
      * @param string $txID
-     * @param bool $all
+     * @param bool   $all
      * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
      */
-    public function getTransactionInfo($txID, $all = true)
+    public function getTransactionInfo ($txID, $all = true)
     {
-        $req = array(
+        $req = [
             'txid' => $txID,
-            'full' => (int)$all
-        );
+            'full' => (int)$all,
+        ];
 
-        return $this->apiCall(CoinpaymentsCommands::GET_TX_INFO, $req);
+        return $this->apiCall(CoinpaymentsCommand::GET_TX_INFO, $req);
     }
 
     /**
      * Creates an address for receiving payments into your CoinPayments Wallet.<br />
+     *
      * @param string $currency The cryptocurrency to create a receiving address for.
-     * @param string $ipnUrl Optionally set an IPN handler to receive notices about this transaction. If ipn_url is empty then it will use the default IPN URL in your account.
+     * @param string $ipnUrl   Optionally set an IPN handler to receive notices about this transaction. If ipn_url is
+     *                         empty then it will use the default IPN URL in your account.
      * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
      */
-    public function getCallbackAddress($currency, $ipnUrl = '')
+    public function getCallbackAddress ($currency, $ipnUrl = '')
     {
-        $req = array(
+        $req = [
             'currency' => $currency,
-            'ipn_url' => $ipnUrl,
-        );
+            'ipn_url'  => $ipnUrl,
+        ];
 
-        return $this->apiCall(CoinpaymentsCommands::GET_CALLBACK_ADDRESS, $req);
+        return $this->apiCall(CoinpaymentsCommand::GET_CALLBACK_ADDRESS, $req);
     }
 
     /**
      * Creates a withdrawal from your account to a specified address.<br />
-     * @param number $amount The amount of the transaction (floating point to 8 decimals).
-     * @param string $currency The cryptocurrency to withdraw.
-     * @param string $address The address to send the coins to.
-     * @param bool $autoConfirm If auto_confirm is true, then the withdrawal will be performed without an email confirmation.
-     * @param string $ipnUrl Optionally set an IPN handler to receive notices about this transaction. If ipn_url is empty then it will use the default IPN URL in your account.
+     *
+     * @param number $amount      The amount of the transaction (floating point to 8 decimals).
+     * @param string $currency    The cryptocurrency to withdraw.
+     * @param string $address     The address to send the coins to.
+     * @param bool   $autoConfirm If auto_confirm is true, then the withdrawal will be performed without an email
+     *                            confirmation.
+     * @param string $ipnUrl      Optionally set an IPN handler to receive notices about this transaction. If ipn_url
+     *                            is empty then it will use the default IPN URL in your account.
      * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
      */
-    public function createWithdrawal($amount, $currency, $address, $autoConfirm = false, $ipnUrl = '')
+    public function createWithdrawal ($amount, $currency, $address, $autoConfirm = false, $ipnUrl = '')
     {
-        $req = array(
-            'amount' => $amount,
-            'currency' => $currency,
-            'address' => $address,
+        $req = [
+            'amount'       => $amount,
+            'currency'     => $currency,
+            'address'      => $address,
             'auto_confirm' => $autoConfirm ? 1 : 0,
-            'ipn_url' => $ipnUrl,
-        );
+            'ipn_url'      => $ipnUrl,
+        ];
 
-        return $this->apiCall(CoinpaymentsCommands::CREATE_WITHDRAWAL, $req);
+        return $this->apiCall(CoinpaymentsCommand::CREATE_WITHDRAWAL, $req);
     }
 
     /**
      * Creates a transfer from your account to a specified merchant.<br />
-     * @param number $amount The amount of the transaction (floating point to 8 decimals).
-     * @param string $currency The cryptocurrency to withdraw.
-     * @param string $merchant The merchant ID to send the coins to.
-     * @param bool $autoConfirm If auto_confirm is true, then the transfer will be performed without an email confirmation.
+     *
+     * @param number $amount      The amount of the transaction (floating point to 8 decimals).
+     * @param string $currency    The cryptocurrency to withdraw.
+     * @param string $merchant    The merchant ID to send the coins to.
+     * @param bool   $autoConfirm If auto_confirm is true, then the transfer will be performed without an email
+     *                            confirmation.
      * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
      */
-    public function createTransfer($amount, $currency, $merchant, $autoConfirm = false)
+    public function createTransfer ($amount, $currency, $merchant, $autoConfirm = false)
     {
-        $req = array(
-            'amount' => $amount,
-            'currency' => $currency,
-            'merchant' => $merchant,
+        $req = [
+            'amount'       => $amount,
+            'currency'     => $currency,
+            'merchant'     => $merchant,
             'auto_confirm' => $autoConfirm ? 1 : 0,
-        );
+        ];
 
-        return $this->apiCall(CoinpaymentsCommands::CREATE_TRANSFER, $req);
+        return $this->apiCall(CoinpaymentsCommand::CREATE_TRANSFER, $req);
     }
 
     /**
      * Creates a transfer from your account to a specified $PayByName tag.<br />
-     * @param number $amount The amount of the transaction (floating point to 8 decimals).
-     * @param string $currency The cryptocurrency to withdraw.
-     * @param string $pbntag The $PayByName tag to send funds to.
-     * @param bool $autoConfirm If auto_confirm is true, then the transfer will be performed without an email confirmation.
+     *
+     * @param number $amount      The amount of the transaction (floating point to 8 decimals).
+     * @param string $currency    The cryptocurrency to withdraw.
+     * @param string $pbntag      The $PayByName tag to send funds to.
+     * @param bool   $autoConfirm If auto_confirm is true, then the transfer will be performed without an email
+     *                            confirmation.
      * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
      */
-    public function sendToPayByName($amount, $currency, $pbntag, $autoConfirm = false)
+    public function sendToPayByName ($amount, $currency, $pbntag, $autoConfirm = false)
     {
-        $req = array(
-            'amount' => $amount,
-            'currency' => $currency,
-            'pbntag' => $pbntag,
+        $req = [
+            'amount'       => $amount,
+            'currency'     => $currency,
+            'pbntag'       => $pbntag,
             'auto_confirm' => $autoConfirm ? 1 : 0,
-        );
+        ];
 
-        return $this->apiCall(CoinpaymentsCommands::CREATE_TRANSFER, $req);
+        return $this->apiCall(CoinpaymentsCommand::CREATE_TRANSFER, $req);
     }
 
     /**
@@ -194,9 +285,8 @@ class Coinpayments
      * @param  array $server_data
      * @return mixed
      * @throws CoinPaymentsException
-     * @throws IpnIncompleteException
      */
-    public function validateIPN(array $post_data, array $server_data)
+    public function validateIPN (array $post_data, array $server_data)
     {
         if (!isset($post_data['ipn_mode'], $post_data['merchant'], $post_data['status'], $post_data['status_text'])) {
             throw new CoinPaymentsException("Insufficient POST data provided.");
@@ -235,28 +325,30 @@ class Coinpayments
     /**
      * @return bool
      */
-    private function isSetup()
+    private function isSetup ()
     {
         return (!empty($this->private_key) && !empty($this->public_key));
     }
 
     /**
      * @param string $cmd the command to be executed
-     * @param array $req
+     * @param array  $req
      * @return Receipt
      * @throws CoinPaymentsException
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    protected function apiCall($cmd, $req = array())
+    protected function apiCall ($cmd, $req = [])
     {
-        if (!$this->isSetup()) throw new CoinPaymentsException('You have not called the Setup function with your private and public keys!');
+        if (!$this->isSetup()) {
+            throw new CoinPaymentsException('You have not called the Setup function with your private and public keys!');
+        }
 
         // Set the API command and required fields
         $req['version'] = 1;
-        $req['cmd'] = $cmd;
-        $req['key'] = $this->public_key;
-        $req['format'] = isset($req['format']) && !empty($req['ipn_url']) ? $req['format'] : $this->format; //supported values are json and xml
+        $req['cmd']     = $cmd;
+        $req['key']     = $this->public_key;
+        $req['format']  = isset($req['format']) && !empty($req['ipn_url']) ? $req['format'] : $this->format; //supported values are json and xml
         $req['ipn_url'] = isset($req['ipn_url']) && !empty($req['ipn_url']) ? $req['ipn_url'] : $this->ipn_url;
 
         // Generate the query string
@@ -273,10 +365,12 @@ class Coinpayments
             curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, 0);
         }
 
-        curl_setopt($this->ch, CURLOPT_HTTPHEADER, array('HMAC: ' . $hmac));
+        curl_setopt($this->ch, CURLOPT_HTTPHEADER, ['HMAC: ' . $hmac]);
         curl_setopt($this->ch, CURLOPT_POSTFIELDS, $postData);
 
-        if (!($data = curl_exec($this->ch))) throw new MessageSendException('cURL error: ' . curl_error($this->ch));
+        if (!($data = curl_exec($this->ch))) {
+            throw new MessageSendException('cURL error: ' . curl_error($this->ch));
+        }
 
         if (PHP_INT_SIZE < 8 && version_compare(PHP_VERSION, '5.4.0') >= 0) {
             // We are on 32-bit PHP, so use the bigint as string option. If you are using any API calls with Satoshis it is highly NOT recommended to use 32-bit PHP
@@ -289,7 +383,7 @@ class Coinpayments
         if ($response === null || !count($response)) {
             cp_log(
                 [
-                    'data' => $data
+                    'data' => $data,
                 ],
                 'JSON_ERROR',
                 Log::LEVEL_ERROR

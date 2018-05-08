@@ -2,7 +2,9 @@
 
 namespace Kevupton\LaravelCoinpayments\Enums;
 
-abstract class CoinpaymentsCommands {
+abstract class CoinpaymentsCommand {
+    const CONVERT = 'convert';
+    const CREATE_MASS_WITHDRAWAL = 'create_mass_withdrawal';
     const CREATE_TRANSACTION = 'create_transaction';
     const CREATE_WITHDRAWAL = 'create_withdrawal';
     const CREATE_TRANSFER = 'create_transfer';
