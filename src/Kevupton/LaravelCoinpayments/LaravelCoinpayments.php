@@ -193,6 +193,11 @@ class LaravelCoinpayments extends Coinpayments
                 $ipn = new Ipn();
             }
 
+            if (isset($request['id'])) {
+                $request['ref_id'] = $request['id'];
+                unset($request['id']);
+            }
+
             $ipn->fill($request);
             $ipn->save();
 
@@ -240,14 +245,14 @@ class LaravelCoinpayments extends Coinpayments
             case IpnType::WITHDRAWAL:
                 $data = $ipn->toArray();
                 /** @var Withdrawal $withdrawal */
-                $withdrawal = Withdrawal::where('ref_id', $ipn->id)->first();
+                $withdrawal = Withdrawal::where('ref_id', $ipn->ref_id)->first();
                 if ($withdrawal && $withdrawal->currency2 === $data['currency']) {
                     $data['amount2'] = $data['amount'];
                     $data['currency2'] = $data['currency'];
                     unset($data['currency'], $data['amount']);
                 }
                 Withdrawal::updateOrCreate([
-                    'ref_id' => $ipn->id,
+                    'ref_id' => $ipn->ref_id,
                 ], $this->filterNullable($data));
                 break;
         }

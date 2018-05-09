@@ -47,6 +47,10 @@ class CpCreateMassWithdrawal extends Migration
         Schema::table($prefix . 'transactions', function (Blueprint $table) {
            $table->string('fee')->nullable()->after('currency2');
         });
+
+        Schema::table($prefix . 'ipns', function (Blueprint $table) {
+           $table->string('ref_id')->nullable()->after('ipn_id');
+        });
     }
 
     /**
@@ -58,6 +62,12 @@ class CpCreateMassWithdrawal extends Migration
     {
         $prefix = cp_table_prefix();
 
+        try {
+            Schema::table($prefix . 'ipns', function (Blueprint $table) use ($prefix) {
+                $table->dropColumn('ref_id');
+            });
+        } catch (Exception $e) {
+        }
 
         try {
             Schema::table($prefix . 'transactions', function (Blueprint $table) use ($prefix) {
