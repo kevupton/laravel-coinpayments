@@ -43,6 +43,10 @@ class CpCreateMassWithdrawal extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
         });
+
+        Schema::table($prefix . 'transactions', function (Blueprint $table) {
+           $table->string('fee')->nullable()->after('currency2');
+        });
     }
 
     /**
@@ -53,6 +57,14 @@ class CpCreateMassWithdrawal extends Migration
     public function down ()
     {
         $prefix = cp_table_prefix();
+
+
+        try {
+            Schema::table($prefix . 'transactions', function (Blueprint $table) use ($prefix) {
+                $table->dropColumn('fee');
+            });
+        } catch (Exception $e) {
+        }
 
         try {
             Schema::table($prefix . 'withdrawals', function (Blueprint $table) use ($prefix) {

@@ -105,6 +105,26 @@ Withdrawal
 ```php
 $withdrawal = \Coinpayments::createWithdrawal($amount, $currency, $address, true);
 ```
+Mass Withdrawal - *Uses the same values for withdrawal, but in an array*
+```php
+$mass_withdrawal = \Coinpayments::createMassWithdrawal([
+    [
+        'amount' => $amount1,
+        'address' => $address1,
+        'currency' => $currency1,
+    ],
+    [
+        'amount' => $amount2,
+        'address' => $address2,
+        'currency' => $currency2,
+    ],
+]);
+```
+Convert Coins
+```php
+$conversion = \Coinpayments::convertCoins($amount, $from, $to, $address = null);
+```
+
 #### IPN validation
 Laravel Coinpayments can automatically handle IPN's for you:
 Just specify, the path and enable it using the env variables.
