@@ -219,24 +219,35 @@ class LaravelCoinpayments extends Coinpayments
      */
     private function updateModel (Ipn $ipn)
     {
-        // create or update the existing IPN record
-        try {
-            $ipn_type = $ipn->ipn_type;
-            $txn_id   = $ipn->txn_id;
-        } catch (\Exception $e) {
-            throw new CoinPaymentsException('Invalid coinpayments IPN. Missing an ipn_type or txn_id');
+        $ipn_type = $ipn->ipn_type;
+        if (!$ipn_type) {
+            throw new CoinPaymentsException('Invalid coinpayments IPN. Missing an ipn_type');
         }
 
-        $condition = ['txn_id' => $txn_id];
         switch ($ipn_type) {
             case IpnType::DEPOSIT:
-                Deposit::updateOrCreate($condition, $this->filterNullable($ipn->toArray()));
+                Deposit::updateOrCreate([
+                    'address' => $ipn->address,
+                    'txn_id' => $ipn->txn_id,
+                ], $this->filterNullable($ipn->toArray()));
                 break;
             case IpnType::API:
-                Transaction::updateOrCreate($condition, $this->filterNullable($ipn->toArray()));
+                Transaction::updateOrCreate([
+                    'txn_id' => $ipn->txn_id,
+                ], $this->filterNullable($ipn->toArray()));
                 break;
             case IpnType::WITHDRAW:
-                Withdrawal::updateOrCreate($condition, $this->filterNullable($ipn->toArray()));
+                $data = $ipn->toArray();
+                /** @var Withdrawal $withdrawal */
+                $withdrawal = Withdrawal::where('ref_id', $ipn->id)->first();
+                if ($withdrawal && $withdrawal->currency2 === $data['currency']) {
+                    $data['amount2'] = $data['amount'];
+                    $data['currency2'] = $data['currency'];
+                    unset($data['currency'], $data['amount']);
+                }
+                Withdrawal::updateOrCreate([
+                    'ref_id' => $ipn->id,
+                ], $this->filterNullable($data));
                 break;
         }
     }
