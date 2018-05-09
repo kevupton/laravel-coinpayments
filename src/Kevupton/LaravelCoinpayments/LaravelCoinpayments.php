@@ -3,15 +3,18 @@
 namespace Kevupton\LaravelCoinpayments;
 
 use Illuminate\Http\Request;
-use Kevupton\LaravelCoinpayments\Enums\CoinpaymentsCommands;
+use Illuminate\Support\Collection;
+use Kevupton\LaravelCoinpayments\Enums\CoinpaymentsCommand;
 use Kevupton\LaravelCoinpayments\Enums\IpnType;
 use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsException;
 use Kevupton\LaravelCoinpayments\Exceptions\CoinPaymentsResponseError;
 use Kevupton\LaravelCoinpayments\Exceptions\IpnIncompleteException;
 use Kevupton\LaravelCoinpayments\Models\CallbackAddress;
+use Kevupton\LaravelCoinpayments\Models\Conversion;
 use Kevupton\LaravelCoinpayments\Models\Deposit;
 use Kevupton\LaravelCoinpayments\Models\Ipn;
 use Kevupton\LaravelCoinpayments\Models\Log;
+use Kevupton\LaravelCoinpayments\Models\MassWithdrawal;
 use Kevupton\LaravelCoinpayments\Models\Model;
 use Kevupton\LaravelCoinpayments\Models\Transaction;
 use Kevupton\LaravelCoinpayments\Models\Transfer;
@@ -82,22 +85,82 @@ class LaravelCoinpayments extends Coinpayments
         }
 
         switch ($receipt->getCommand()) {
-            case CoinpaymentsCommands::CREATE_TRANSACTION:
+            case CoinpaymentsCommand::CREATE_TRANSACTION:
                 // the currency1 we sent to coinpayments
                 $data['amount1'] = $req['amount'];
                 // the currency2 coinpayments returned to us
                 $data['amount2'] = $data['amount'];
                 return Transaction::create($data);
-            case CoinpaymentsCommands::CREATE_WITHDRAWAL:
-                return Withdrawal::create($data);
-            case CoinpaymentsCommands::CREATE_TRANSFER:
+            case CoinpaymentsCommand::CREATE_WITHDRAWAL:
+                return $this->saveWithdrawal($receipt->getResponse()['result'], $receipt->getRequest());
+            case CoinpaymentsCommand::CREATE_TRANSFER:
                 return Transfer::create($data);
-            case CoinpaymentsCommands::GET_CALLBACK_ADDRESS:
+            case CoinpaymentsCommand::GET_CALLBACK_ADDRESS:
                 return CallbackAddress::create($data);
+            case CoinpaymentsCommand::CONVERT:
+                return Conversion::create($data);
+            case CoinpaymentsCommand::CREATE_MASS_WITHDRAWAL:
+                return $this->registerMassWithdrawal($receipt);
         }
 
         return $receipt->getResponse()['result'];
+    }
 
+    /**
+     *
+     * @param Receipt $receipt
+     * @return MassWithdrawal
+     */
+    private function registerMassWithdrawal (Receipt $receipt)
+    {
+        /** @var MassWithdrawal $mass_withdrawal */
+        $mass_withdrawal = MassWithdrawal::create();
+
+        $requests = [];
+        collect($receipt->getRequest())->filter(function ($value, $key) {
+            return preg_match('/^wd\[wd/', $key);
+        })->each(function ($value, $key) use (&$requests) {
+            if (preg_match('/^wd\[wd([0-9]+)\]\[(.*?)\]/', $key, $matches)) {
+                $index = intval($matches[1]);
+                if (!isset($requests[$index])) {
+                    $requests[$index] = [];
+                }
+                $requests[$index][$matches[2]] = $value;
+            }
+        });
+
+        $mass_withdrawal->withdrawals = collect($receipt->getResponse()['result'])
+            ->flatMap(function ($value, $wdIndex) use ($mass_withdrawal, $requests) {
+                $index = intval(str_replace('wd', '', $wdIndex));
+                return [$index => $this->saveWithdrawal($value, $requests[$index], $mass_withdrawal->id)];
+            });
+
+        return $mass_withdrawal;
+    }
+
+    /**
+     * Saves the withdrawal from the request and response data.
+     *
+     * @param null $result
+     * @param null $request
+     * @param null $mass_withdrawal_id
+     * @return mixed
+     */
+    private function saveWithdrawal ($result  = null, $request = null, $mass_withdrawal_id = null)
+    {
+        if (isset($result['id'])) {
+            $result['ref_id'] = $result['id'];
+            unset($result['id']);
+        }
+
+        if (isset($result['currency2'])) {
+            $result['amount2'] = $result['amount'];
+            unset($result['amount']);
+        }
+
+        $data = array_merge($request, $result, ['mass_withdrawal_id' => $mass_withdrawal_id]);
+
+        return Withdrawal::create($data);
     }
 
     /**
@@ -114,8 +177,8 @@ class LaravelCoinpayments extends Coinpayments
             'headers' => $headers,
             'server'  => array_intersect_key($server, [
                 'PHP_AUTH_USER' => '',
-                'PHP_AUTH_PW' => '',
-                'HTTP_HMAC' => ''
+                'PHP_AUTH_PW'   => '',
+                'HTTP_HMAC'     => '',
             ]),
         ];
 
@@ -128,6 +191,11 @@ class LaravelCoinpayments extends Coinpayments
                 $ipn = Ipn::where('ipn_id', $request['ipn_id'])->firstOrFail();
             } catch (\Exception $e) {
                 $ipn = new Ipn();
+            }
+
+            if (isset($request['id'])) {
+                $request['ref_id'] = $request['id'];
+                unset($request['id']);
             }
 
             $ipn->fill($request);
@@ -157,24 +225,35 @@ class LaravelCoinpayments extends Coinpayments
      */
     private function updateModel (Ipn $ipn)
     {
-        // create or update the existing IPN record
-        try {
-            $ipn_type = $ipn->ipn_type;
-            $txn_id   = $ipn->txn_id;
-        } catch (\Exception $e) {
-            throw new CoinPaymentsException('Invalid coinpayments IPN. Missing an ipn_type or txn_id');
+        $ipn_type = $ipn->ipn_type;
+        if (!$ipn_type) {
+            throw new CoinPaymentsException('Invalid coinpayments IPN. Missing an ipn_type');
         }
 
-        $condition = ['txn_id' => $txn_id];
         switch ($ipn_type) {
             case IpnType::DEPOSIT:
-                Deposit::updateOrCreate($condition, $this->filterNullable($ipn->toArray()));
+                Deposit::updateOrCreate([
+                    'address' => $ipn->address,
+                    'txn_id' => $ipn->txn_id,
+                ], $this->filterNullable($ipn->toArray()));
                 break;
             case IpnType::API:
-                Transaction::updateOrCreate($condition, $this->filterNullable($ipn->toArray()));
+                Transaction::updateOrCreate([
+                    'txn_id' => $ipn->txn_id,
+                ], $this->filterNullable($ipn->toArray()));
                 break;
-            case IpnType::WITHDRAW:
-                Withdrawal::updateOrCreate($condition, $this->filterNullable($ipn->toArray()));
+            case IpnType::WITHDRAWAL:
+                $data = $ipn->toArray();
+                /** @var Withdrawal $withdrawal */
+                $withdrawal = Withdrawal::where('ref_id', $ipn->ref_id)->first();
+                if ($withdrawal && $withdrawal->currency2 === $data['currency']) {
+                    $data['amount2'] = $data['amount'];
+                    $data['currency2'] = $data['currency'];
+                    unset($data['currency'], $data['amount']);
+                }
+                Withdrawal::updateOrCreate([
+                    'ref_id' => $ipn->ref_id,
+                ], $this->filterNullable($data));
                 break;
         }
     }
@@ -186,9 +265,10 @@ class LaravelCoinpayments extends Coinpayments
      * @param $array
      * @return array
      */
-    private function filterNullable($array) {
+    private function filterNullable ($array)
+    {
         return collect($array)->filter(function ($value) {
-           return !is_null($value);
+            return !is_null($value);
         })->toArray();
     }
 

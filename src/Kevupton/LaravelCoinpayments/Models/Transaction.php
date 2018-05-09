@@ -31,6 +31,7 @@ namespace Kevupton\LaravelCoinpayments\Models;
  * @property mixed status
  * @property mixed status_text
  * @property mixed timeout
+ * @property mixed fee
  * @property mixed status_url
  * @property mixed qrcode_url
  * @property mixed created_at
@@ -41,7 +42,7 @@ class Transaction extends Model
     public $fillable = [
         'amount1', 'amount2', 'currency1', 'currency2', 'address',
         'buyer_email', 'buyer_name', 'item_name', 'item_number',
-        'invoice', 'custom', 'ipn_url', 'txn_id',
+        'invoice', 'custom', 'ipn_url', 'txn_id', 'fee',
         'confirms_needed', 'timeout', 'status_url', 'qrcode_url',
         'received_amount', 'received_confirms', 'status', 'status_text'
     ];
