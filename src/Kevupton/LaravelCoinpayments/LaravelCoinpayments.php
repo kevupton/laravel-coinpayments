@@ -118,9 +118,9 @@ class LaravelCoinpayments extends Coinpayments
 
         $requests = [];
         collect($receipt->getRequest())->filter(function ($value, $key) {
-            return preg_match('/^wd\[wd/ui', $key);
-        })->each(function ($value, $key) use ($requests) {
-            if (preg_match('/^wd\[wd([0-9]+)\]\[(.*?)\]/ui', $key, $matches)) {
+            return preg_match('/^wd\[wd/', $key);
+        })->each(function ($value, $key) use (&$requests) {
+            if (preg_match('/^wd\[wd([0-9]+)\]\[(.*?)\]/', $key, $matches)) {
                 $index = intval($matches[1]);
                 if (!isset($requests[$index])) {
                     $requests[$index] = [];
@@ -130,9 +130,9 @@ class LaravelCoinpayments extends Coinpayments
         });
 
         $mass_withdrawal->withdrawals = collect($receipt->getResponse()['result'])
-            ->map(function ($value, $wdIndex) use ($mass_withdrawal, $requests) {
+            ->flatMap(function ($value, $wdIndex) use ($mass_withdrawal, $requests) {
                 $index = intval(str_replace('wd', '', $wdIndex));
-                return $this->saveWithdrawal($value, $requests[$index], $mass_withdrawal->id);
+                return [$index => $this->saveWithdrawal($value, $requests[$index], $mass_withdrawal->id)];
             });
 
         return $mass_withdrawal;
