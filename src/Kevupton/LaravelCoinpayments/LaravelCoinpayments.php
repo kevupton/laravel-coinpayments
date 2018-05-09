@@ -130,7 +130,8 @@ class LaravelCoinpayments extends Coinpayments
         });
 
         $mass_withdrawal->withdrawals = collect($receipt->getResponse()['result'])
-            ->map(function ($value, $index) use ($mass_withdrawal, $requests) {
+            ->map(function ($value, $wdIndex) use ($mass_withdrawal, $requests) {
+                $index = intval(str_replace('wd', '', $wdIndex));
                 return $this->saveWithdrawal($value, $requests[$index], $mass_withdrawal->id);
             });
 

@@ -35,6 +35,7 @@ class CpCreateMassWithdrawal extends Migration
 
         Schema::table($prefix . 'withdrawals', function (Blueprint $table) use ($prefix) {
             $table->string('amount2')->nullable()->after('amount');
+            $table->string('status_text')->nullable()->after('status');
             $table->unsignedInteger('mass_withdrawal_id')->nullable()->index()->after('id');
             $table->foreign('mass_withdrawal_id')
                 ->references('id')
@@ -58,9 +59,10 @@ class CpCreateMassWithdrawal extends Migration
                 $table->dropForeign(['mass_withdrawal_id']);
                 $table->dropIndex(['mass_withdrawal_id']);
                 $table->dropColumn('mass_withdrawal_id');
+                $table->dropColumn('status_text');
+                $table->dropColumn('amount2');
             });
         } catch (Exception $e) {
-
         }
 
         Schema::dropIfExists($prefix . 'conversions');
