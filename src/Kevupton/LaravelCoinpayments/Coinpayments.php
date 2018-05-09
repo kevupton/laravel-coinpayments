@@ -137,19 +137,15 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function createMassWithdrawal ($withdrawals)
+    public function createMassWithdrawal (array $withdrawals)
     {
         $req = collect($withdrawals)->flatMap(function ($withdrawal, $index) {
             // the minimum required values for it to work.
-            $validator = validator($withdrawal, [
+            app('validator')->validate($withdrawal, [
                 'amount'   => 'required|numeric',
                 'address'  => 'required|string',
                 'currency' => 'required|string',
             ]);
-
-            if ($validator->fails()) {
-                throw new ValidationException($validator);
-            }
 
             return collect($withdrawal)->flatMap(function ($value, $key) use ($index) {
                return ["wd[wd$index][$key]" => $value];

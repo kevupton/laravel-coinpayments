@@ -236,7 +236,7 @@ class LaravelCoinpayments extends Coinpayments
                     'txn_id' => $ipn->txn_id,
                 ], $this->filterNullable($ipn->toArray()));
                 break;
-            case IpnType::WITHDRAW:
+            case IpnType::WITHDRAWAL:
                 $data = $ipn->toArray();
                 /** @var Withdrawal $withdrawal */
                 $withdrawal = Withdrawal::where('ref_id', $ipn->id)->first();

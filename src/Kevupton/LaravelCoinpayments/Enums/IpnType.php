@@ -10,7 +10,7 @@ namespace Kevupton\LaravelCoinpayments\Enums;
 
 class IpnType
 {
-    const DEPOSIT = 'deposit';
-    const WITHDRAW = 'withdraw';
-    const API = 'api';
+    const DEPOSIT    = 'deposit';
+    const WITHDRAWAL = 'withdrawal';
+    const API        = 'api';
 }
