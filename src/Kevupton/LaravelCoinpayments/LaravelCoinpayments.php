@@ -35,7 +35,7 @@ class LaravelCoinpayments extends Coinpayments
 
     private $app;
 
-    public function __construct ($app)
+    public function __construct ($app = null)
     {
         $this->app = $app;
 
