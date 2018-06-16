@@ -65,10 +65,18 @@ if (!function_exists('cp_log')) {
 
 
 if (!function_exists('validate_eth_address')) {
+    /**
+     * @param $address
+     * @return bool
+     * @throws \Kevupton\LaravelCoinpayments\Exceptions\InvalidHashException
+     */
     function validate_eth_address ($address)
     {
-        if (is_eth_address($address)) {
-            return true;
+        try {
+            if (is_eth_address($address)) {
+                return true;
+            }
+        } catch (Exception $e) {
         }
 
         throw new \Kevupton\LaravelCoinpayments\Exceptions\InvalidHashException('Invalid ETH address');
@@ -82,20 +90,12 @@ if (!function_exists('is_eth_address')) {
      * @method is_eth_address
      * @param $address string the given HEX adress
      * @return bool
+     * @throws Exception
      */
     function is_eth_address ($address)
     {
-        $regex = '/^(0x)?[0-9a-f]{40}$/i';
-        if (!preg_match($regex, $address)) {
-            // check if it has the basic requirements of an address
-            return false;
-        } else if (preg_match('/^(0x)?[0-9a-f]{40}$/', $address) || preg_match('/^(0x)?[0-9A-F]{40}$/', $address)) {
-            // If it's all small caps or all all caps, return true
-            return true;
-        } else {
-            // Otherwise check each case
-            return is_checksum_address($address);
-        }
+        $validator = new \Kevupton\LaravelCoinpayments\Validators\EthereumValidator();
+        return $validator->isAddress($address);
     }
 }
 
