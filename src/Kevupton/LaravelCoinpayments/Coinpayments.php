@@ -225,6 +225,24 @@ class Coinpayments
     }
 
     /**
+     * Get withdrawal information via withdrawal ID
+     *
+     * @param string $refID
+     * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
+     */
+    public function withdrawalInfo ($refID)
+    {
+        $req = [
+            'id' => $refID
+        ];
+
+        return $this->apiCall(CoinpaymentsCommand::GET_WITHDRAWAL_INFO, $req);
+    }
+
+    /**
      * Creates a transfer from your account to a specified merchant.<br />
      *
      * @param number $amount      The amount of the transaction (floating point to 8 decimals).
