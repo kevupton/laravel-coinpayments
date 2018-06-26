@@ -227,19 +227,37 @@ class Coinpayments
     /**
      * Get withdrawal information via withdrawal ID
      *
-     * @param string $refID
+     * @param string $refID the withdrawal ID
      * @return array|mixed
      * @throws CoinPaymentsException
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function withdrawalInfo ($refID)
+    public function getWithdrawalInfo ($refID)
     {
         $req = [
             'id' => $refID
         ];
 
         return $this->apiCall(CoinpaymentsCommand::GET_WITHDRAWAL_INFO, $req);
+    }
+
+    /**
+     * Get withdrawal information via withdrawal ID
+     *
+     * @param string $refID the conversion ID
+     * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
+     */
+    public function getConversionInfo ($refID)
+    {
+        $req = [
+            'id' => $refID
+        ];
+
+        return $this->apiCall(CoinpaymentsCommand::GET_CONVERSION_INFO, $req);
     }
 
     /**

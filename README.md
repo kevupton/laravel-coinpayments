@@ -124,6 +124,14 @@ Convert Coins
 ```php
 $conversion = \Coinpayments::convertCoins($amount, $from, $to, $address = null);
 ```
+Withdrawal Info
+```php
+$info = \Coinpayments::getWithdrawalInfo($id);
+```
+Conversion Info
+```php
+$info = \Coinpayments::getConversionInfo($id);
+```
 
 #### IPN validation
 Laravel Coinpayments can automatically handle IPN's for you:
