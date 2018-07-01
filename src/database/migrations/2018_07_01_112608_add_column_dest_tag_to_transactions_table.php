@@ -16,7 +16,7 @@ class AddColumnDestTagToTransactionsTable extends Migration
         $prefix = cp_table_prefix();
 
         Schema::table($prefix . 'transactions', function (Blueprint $table) {
-            $table->string('dest_tag')->after('address');
+            $table->string('dest_tag')->after('address')->nullable();
         });
     }
 
