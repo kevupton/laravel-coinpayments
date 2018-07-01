@@ -17,6 +17,7 @@ namespace Kevupton\LaravelCoinpayments\Models;
  * @property mixed currency1
  * @property mixed currency2
  * @property mixed address
+ * @property mixed dest_tag
  * @property mixed buyer_email
  * @property mixed buyer_name
  * @property mixed item_name
