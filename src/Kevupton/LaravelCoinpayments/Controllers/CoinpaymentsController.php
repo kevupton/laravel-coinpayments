@@ -28,5 +28,7 @@ class CoinpaymentsController extends Controller
             cp_log($e->getIpn()->toArray(), 'IPN_INCOMPLETE', Log::LEVEL_ALL);
             return response($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+        
+        return response(Response::HTTP_OK);
     }
 }
