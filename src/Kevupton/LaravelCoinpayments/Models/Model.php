@@ -9,14 +9,7 @@ class Model extends EloquentModel
      * @param array $attr
      */
     public function __construct($attr = array()) {
+        $this->table = cp_table_prefix() . self::getTable();
         parent::__construct($attr);
-    }
-
-    /**
-     * @return string
-     */
-    public function getTable()
-    {
-        return cp_table_prefix() . parent::getTable();
     }
 }
