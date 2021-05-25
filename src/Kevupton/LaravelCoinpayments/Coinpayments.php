@@ -20,14 +20,78 @@ class Coinpayments
     private $format;
     private $ch = null;
 
-    public function __construct ($private_key, $public_key, $merchant_id, $ipn_secret, $ipn_url, $format = 'json')
+    public function __construct($private_key, $public_key, $merchant_id = null, $ipn_secret = null, $ipn_url = null, $format = 'json')
     {
         $this->merchant_id = $merchant_id;
-        $this->public_key  = $public_key;
+        $this->public_key = $public_key;
         $this->private_key = $private_key;
-        $this->ipn_secret  = $ipn_secret;
-        $this->ipn_url     = $ipn_url;
-        $this->format      = $format;
+        $this->ipn_secret = $ipn_secret;
+        $this->ipn_url = $ipn_url;
+        $this->format = $format;
+    }
+
+
+    public function setParameter($key, $value = null)
+    {
+        $this->$key = $value;
+        return $this;
+    }
+
+
+    public function getParameter($key)
+    {
+        return $this->$key;
+    }
+
+
+    public function setIPNSecret($value)
+    {
+        return $this->setParameter('ipn_secret', $value);
+    }
+
+
+    public function getIPNSecret()
+    {
+        return $this->getParameter('ipn_secret');
+
+
+    }
+
+    public function setMerchantID($value)
+    {
+        return $this->setParameter('merchant_id', $value);
+    }
+
+    public function getMerchantID()
+    {
+        return $this->getParameter('merchant_id');
+    }
+
+    public function setIPN($value)
+    {
+        return $this->setParameter('ipn_url', $value);
+    }
+
+
+    public function setPrivateKey($value)
+    {
+        return $this->setParameter('private_key', $value);
+    }
+
+    public function setPublicKey($value)
+    {
+        return $this->setParameter('public_key', $value);
+    }
+
+
+    public function getPrivateKey()
+    {
+        return $this->getParameter('private_key');
+    }
+
+    public function getPublicKey()
+    {
+        return $this->getParameter('public_key');
     }
 
     /**
