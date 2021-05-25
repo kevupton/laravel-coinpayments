@@ -142,7 +142,7 @@ COINPAYMENTS_IPN_ROUTE_ENABLED=true
 COINPAYMENTS_IPN_ROUTE_PATH=/api/ipn
 ```
 
-You can just just subscribe to the Model events using an event listening on the following events:
+You can just subscribe to the Model events using an event listening on the following events:
 ###### Deposit - When someone deposits money to a callback address
 - DepositCreated - When a deposit has been created
 - DepositUpdated - When a deposit has been updated, but not complete.
