@@ -166,7 +166,7 @@ Then just subscribe to the event by adding a listener to the `App\Providers\Even
      * @var array
      */
     protected $listen = [
-        Kevupton\LarvelCoinpayments\Events\Deposit\DepositComplete::class => [
+        Kevupton\LaravelCoinpayments\Events\Deposit\DepositComplete::class => [
             \App\Listeners\DoSomethingOnDepositListener::class, // your own class listener for when a deposit is created
         ],
     ];
