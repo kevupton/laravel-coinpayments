@@ -259,6 +259,24 @@ class Coinpayments
 
         return $this->apiCall(CoinpaymentsCommand::GET_CALLBACK_ADDRESS, $req);
     }
+    
+     /**
+     * Generates deposit address<br />
+     *
+     * @param string $currency The cryptocurrency to create a receiving address for.
+     * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
+     */
+    public function getDepositAddress{
+         $req = [
+            'currency' => $currency,
+          //  'ipn_url'  => $ipnUrl,
+        ];
+
+        return $this->apiCall(CoinpaymentsCommand::GET_DEPOSIT_ADDRESS, $req);
+    }
 
     /**
      * Creates a withdrawal from your account to a specified address.<br />
