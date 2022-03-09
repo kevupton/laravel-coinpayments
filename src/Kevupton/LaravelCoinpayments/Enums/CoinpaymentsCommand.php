@@ -2,7 +2,8 @@
 
 namespace Kevupton\LaravelCoinpayments\Enums;
 
-abstract class CoinpaymentsCommand {
+abstract class CoinpaymentsCommand
+{
     const CONVERT = 'convert';
     const CREATE_MASS_WITHDRAWAL = 'create_mass_withdrawal';
     const CREATE_TRANSACTION = 'create_transaction';
@@ -14,4 +15,5 @@ abstract class CoinpaymentsCommand {
     const GET_CALLBACK_ADDRESS = 'get_callback_address';
     const BALANCES = 'balances';
     const RATES = 'rates';
+    const GET_DEPOSIT_ADDRESS = 'get_deposit_address';
 }
