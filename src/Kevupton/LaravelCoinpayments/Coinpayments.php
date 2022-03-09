@@ -53,8 +53,6 @@ class Coinpayments
     public function getIPNSecret()
     {
         return $this->getParameter('ipn_secret');
-
-
     }
 
     public function setMerchantID($value)
@@ -105,7 +103,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function getRates ($short = true, $accepted = true)
+    public function getRates($short = true, $accepted = true)
     {
         return $this->apiCall(CoinpaymentsCommand::RATES, ['short' => (int)$short, 'accepted' => (int)$accepted]);
     }
@@ -119,7 +117,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function getBalances ($all = false)
+    public function getBalances($all = false)
     {
         return $this->apiCall(CoinpaymentsCommand::BALANCES, ['all' => $all ? 1 : 0]);
     }
@@ -138,7 +136,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function createTransactionSimple ($amount, $currencyIn, $currencyOut, $additional = [])
+    public function createTransactionSimple($amount, $currencyIn, $currencyOut, $additional = [])
     {
         $acceptableFields = [
             'address', 'buyer_email', 'buyer_name',
@@ -167,7 +165,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function createTransaction ($req)
+    public function createTransaction($req)
     {
         // See https://www.coinpayments.net/apidoc-create-transaction for parameters
         return $this->apiCall(CoinpaymentsCommand::CREATE_TRANSACTION, $req);
@@ -183,7 +181,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function convertCoins ($amount, $from, $to, $address = null)
+    public function convertCoins($amount, $from, $to, $address = null)
     {
         $req = [
             'amount'  => $amount,
@@ -201,7 +199,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function createMassWithdrawal (array $withdrawals)
+    public function createMassWithdrawal(array $withdrawals)
     {
         $req = collect($withdrawals)->flatMap(function ($withdrawal, $index) {
             // the minimum required values for it to work.
@@ -212,7 +210,7 @@ class Coinpayments
             ]);
 
             return collect($withdrawal)->flatMap(function ($value, $key) use ($index) {
-               return ["wd[wd$index][$key]" => $value];
+                return ["wd[wd$index][$key]" => $value];
             })->toArray();
         })->toArray();
 
@@ -229,7 +227,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function getTransactionInfo ($txID, $all = true)
+    public function getTransactionInfo($txID, $all = true)
     {
         $req = [
             'txid' => $txID,
@@ -250,7 +248,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function getCallbackAddress ($currency, $ipnUrl = '')
+    public function getCallbackAddress($currency, $ipnUrl = '')
     {
         $req = [
             'currency' => $currency,
@@ -259,8 +257,8 @@ class Coinpayments
 
         return $this->apiCall(CoinpaymentsCommand::GET_CALLBACK_ADDRESS, $req);
     }
-    
-     /**
+
+    /**
      * Generates deposit address<br />
      *
      * @param string $currency The cryptocurrency to create a receiving address for.
@@ -269,10 +267,11 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function getDepositAddress{
-         $req = [
+    public function getDepositAddress($currency)
+    {
+        $req = [
             'currency' => $currency,
-          //  'ipn_url'  => $ipnUrl,
+            //  'ipn_url'  => $ipnUrl,
         ];
 
         return $this->apiCall(CoinpaymentsCommand::GET_DEPOSIT_ADDRESS, $req);
@@ -293,7 +292,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function createWithdrawal ($amount, $currency, $address, $autoConfirm = false, $ipnUrl = '')
+    public function createWithdrawal($amount, $currency, $address, $autoConfirm = false, $ipnUrl = '')
     {
         $req = [
             'amount'       => $amount,
@@ -315,7 +314,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function getWithdrawalInfo ($refID)
+    public function getWithdrawalInfo($refID)
     {
         $req = [
             'id' => $refID
@@ -333,7 +332,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function getConversionInfo ($refID)
+    public function getConversionInfo($refID)
     {
         $req = [
             'id' => $refID
@@ -355,7 +354,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function createTransfer ($amount, $currency, $merchant, $autoConfirm = false)
+    public function createTransfer($amount, $currency, $merchant, $autoConfirm = false)
     {
         $req = [
             'amount'       => $amount,
@@ -380,7 +379,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function sendToPayByName ($amount, $currency, $pbntag, $autoConfirm = false)
+    public function sendToPayByName($amount, $currency, $pbntag, $autoConfirm = false)
     {
         $req = [
             'amount'       => $amount,
@@ -400,7 +399,7 @@ class Coinpayments
      * @return mixed
      * @throws CoinPaymentsException
      */
-    public function validateIPN (array $post_data, array $server_data)
+    public function validateIPN(array $post_data, array $server_data)
     {
         if (!isset($post_data['ipn_mode'], $post_data['merchant'], $post_data['status'], $post_data['status_text'])) {
             throw new CoinPaymentsException("Insufficient POST data provided.");
@@ -414,7 +413,6 @@ class Coinpayments
             if ($server_data['PHP_AUTH_PW'] !== $this->ipn_secret) {
                 throw new CoinPaymentsException("Invalid IPN secret provided.");
             }
-
         } elseif ($post_data['ipn_mode'] == 'hmac') {
 
             $hmac = hash_hmac("sha512", file_get_contents('php://input'), $this->ipn_secret);
@@ -425,7 +423,6 @@ class Coinpayments
             if ($post_data['merchant'] !== $this->merchant_id) {
                 throw new CoinPaymentsException("Invalid merchant ID provided.");
             }
-
         } else {
             throw new CoinPaymentsException("Invalid IPN mode provided.");
         }
@@ -439,7 +436,7 @@ class Coinpayments
     /**
      * @return bool
      */
-    private function isSetup ()
+    private function isSetup()
     {
         return (!empty($this->private_key) && !empty($this->public_key));
     }
@@ -452,7 +449,7 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    protected function apiCall ($cmd, $req = [])
+    protected function apiCall($cmd, $req = [])
     {
         if (!$this->isSetup()) {
             throw new CoinPaymentsException('You have not called the Setup function with your private and public keys!');
