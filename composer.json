@@ -1,32 +1,40 @@
 {
-    "name": "kevupton/laravel-coinpayments",
-    "description": "Coinpayments for Laravel",
-    "keywords": ["laravel", "lumen", "coinpayments"],
-    "type": "Extension",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Kevin Upton",
-            "email": "uptonkg@gmail.com"
-        }
-    ],
-    "require": {
-        "php": ">=5.5",
-        "kevupton/laravel-package-service-provider": "^0.0.5",
-        "doctrine/dbal": "^2.6"
+  "name": "oasin/coinpayments",
+  "description": "Coinpayments for Laravel",
+  "keywords": [
+    "laravel",
+    "lumen",
+    "coinpayments"
+  ],
+  "type": "extension",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Kevin Upton",
+      "email": "uptonkg@gmail.com"
     },
-    "autoload": {
-        "psr-4": {
-            "Kevupton\\LaravelCoinpayments\\": "src/Kevupton/LaravelCoinpayments/"
-        },
-        "files": [
-            "src/Kevupton/LaravelCoinpayments/Helpers/helpers.php",
-            "src/Kevupton/LaravelCoinpayments/Helpers/constants.php"
-        ]
-    },
-    "minimum-stability": "stable",
-    "require-dev": {
-        "laravel/laravel": "^5.5",
-        "laravel/lumen": "^5.5"
+    {
+      "name": "Kevin M4dev",
+      "email": "oasintech@gmail.com"
     }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "kevupton/laravel-package-service-provider": "^0.0.5",
+    "doctrine/dbal": "^3.3.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Oasin\\LaravelCoinpayments\\": "src/LaravelCoinpayments/"
+    },
+    "files": [
+      "src/LaravelCoinpayments/Helpers/helpers.php",
+      "src/LaravelCoinpayments/Helpers/constants.php"
+    ]
+  },
+  "minimum-stability": "stable",
+  "require-dev": {
+    "laravel/laravel": "^5.5",
+    "laravel/lumen": "^5.5"
+  }
 }

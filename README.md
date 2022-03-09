@@ -16,7 +16,7 @@ composer require kevupton/laravel-coinpayments
 
 ```php
 // add directly from the app 
-$app->register(\Kevupton\LaravelCoinpayments\Providers\LaravelCoinpaymentsServiceProvider::class);
+$app->register(\Oasin\LaravelCoinpayments\Providers\LaravelCoinpaymentsServiceProvider::class);
 ```
 
 OR
@@ -26,7 +26,7 @@ All service providers are registered in the `config/app.php` configuration file.
 'providers' => [
     // Other Service Providers
 
-    \Kevupton\LaravelCoinpayments\Providers\LaravelCoinpaymentsServiceProvider::class,
+    \Oasin\LaravelCoinpayments\Providers\LaravelCoinpaymentsServiceProvider::class,
 ],
 ```
 
@@ -166,8 +166,13 @@ Then just subscribe to the event by adding a listener to the `App\Providers\Even
      * @var array
      */
     protected $listen = [
+<<<<<<< Updated upstream
         Kevupton\LaravelCoinpayments\Events\Deposit\DepositComplete::class => [
             \App\Listeners\DoSomethingOnDepositListener::class, // your own class listener for when a deposit is created
+=======
+        Oasin\LarvelCoinpayments\Events\Deposit\DepositCompleted::class => [
+            App\Listeners\DoSomethingOnDepositListener::class, // your own class listener for when a deposit is created
+>>>>>>> Stashed changes
         ],
     ];
 ```
@@ -179,7 +184,7 @@ Example event listener:
 
 namespace App\Listeners;
 
-use Kevupton\LaravelCoinpayments\Events\Deposit\DepositComplete;
+use Oasin\LaravelCoinpayments\Events\Deposit\DepositComplete;
 
 class DoSomethingOnDepositListener
 {
@@ -219,9 +224,9 @@ CoinPayments Controller
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Kevupton\LaravelCoinpayments\Exceptions\IpnIncompleteException;
-use Kevupton\LaravelCoinpayments\Models\Ipn;
-use Kevupton\LaravelCoinpayments\Models\Transaction;
+use Oasin\LaravelCoinpayments\Exceptions\IpnIncompleteException;
+use Oasin\LaravelCoinpayments\Models\Ipn;
+use Oasin\LaravelCoinpayments\Models\Transaction;
 
 class CoinpaymentsController extends Controller
 {
