@@ -269,8 +269,9 @@ class Coinpayments
      * @throws JsonParseException
      * @throws MessageSendException
      */
-    public function getDepositAddress{
-         $req = [
+    public function getDepositAddress (currency)
+    {
+        $req = [
             'currency' => $currency,
           //  'ipn_url'  => $ipnUrl,
         ];
