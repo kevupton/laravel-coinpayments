@@ -17,12 +17,11 @@ class CreateCallbackAddressTable extends Migration
 
         Schema::create($prefix . 'callback_addresses', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('address', 128);
+            $table->string('address', 128)->unique();
             $table->string('currency', 10);
             $table->text('pubkey')->nullable();
             $table->string('ipn_url')->nullable();
             $table->string('dest_tag')->nullable();
-            $table->unique(['address', 'currency']);
             $table->timestamps();
         });
 
