@@ -445,6 +445,24 @@ class Coinpayments
     }
 
     /**
+     * Gets the current CoinPayments.net merchant profile info.
+     *
+     * @return array|mixed
+     * @throws CoinPaymentsException
+     * @throws JsonParseException
+     * @throws MessageSendException
+     */
+    public function getPBNInfo ()
+    {
+        return $this->apiCall(CoinpaymentsCommand::GET_PBN_INFO, ['merchant' => $this->merchant_id]);
+    }
+
+    public function getBasicInfo ()
+    {
+        return $this->apiCall(CoinpaymentsCommand::GET_BASIC_INFO);
+    }
+
+    /**
      * @param string $cmd the command to be executed
      * @param array  $req
      * @return Receipt
